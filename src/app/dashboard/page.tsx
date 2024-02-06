@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
-// import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, useLoadScript, LoadScript, Marker } from '@react-google-maps/api';
 import { io } from 'socket.io-client';
 import { FaBell } from 'react-icons/fa';
 import { FaXmark } from 'react-icons/fa6';
@@ -32,6 +32,9 @@ export default function Home() {
 	const [recSpeed, setRecSpeed] = useState(0.0);
 	const [rsuLatitude, setRsuLatitude] = useState(0.0);
 	const [rsuLongitude, setRsuLongitude] = useState(0.0);
+
+	const location = { lat: latitude, lng: longitude } as google.maps.LatLngLiteral;
+	const rsuLocation = { lat: rsuLatitude, lng: rsuLongitude } as google.maps.LatLngLiteral;
 
 	const handleSwiper = (swiper: any) => {
 		setThumbsSwiper(swiper);
@@ -115,7 +118,27 @@ export default function Home() {
 		<div>
 			<div className="home-background" />
 			<div className="home-container">
-				<div className="left-container"></div>
+				<div className="left-container">
+					<div>
+					<LoadScript googleMapsApiKey="MY_GOOGLE_MAPS_API_KEY">
+						    <GoogleMap
+                                mapContainerStyle={{width: 1071, height: 1002}}
+                                options={{ disableDefaultUI: true }}
+							    zoom={14}
+                                center={location}
+						    >
+								<Marker
+									icon={{url: '/car_pin.svg'}}
+									position={location}
+								/>
+								<Marker
+									icon={{url: '/rsu_pin.svg'}}
+									position={rsuLocation}
+								/>
+							</GoogleMap>
+					</LoadScript>
+					</div>
+				</div>
 				<div className="right-container">
 					<div className="video-container">
 						<div className='main-video-container'>
