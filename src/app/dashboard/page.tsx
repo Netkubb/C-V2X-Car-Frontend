@@ -1,5 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 // import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import { io } from 'socket.io-client';
 import { FaBell } from 'react-icons/fa';
@@ -7,8 +9,13 @@ import { FaXmark } from 'react-icons/fa6';
 import { MdOutlineExitToApp } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
 import './dashboardPage.css';
+import 'swiper/css';
+import 'swiper/css/free-mode';
+import 'swiper/css/navigation';
+import 'swiper/css/thumbs';
 
 export default function Home() {
+	const [thumbsSwiper, setThumbsSwiper] = useState(null);
 	const [date, setDate] = useState('');
 	const [time, setTime] = useState('');
 	const [isButtonVisible, setIsButtonVisible] = useState(true);
@@ -25,6 +32,10 @@ export default function Home() {
 	const [recSpeed, setRecSpeed] = useState(0.0);
 	const [rsuLatitude, setRsuLatitude] = useState(0.0);
 	const [rsuLongitude, setRsuLongitude] = useState(0.0);
+
+	const handleSwiper = (swiper: any) => {
+		setThumbsSwiper(swiper);
+	};
 
 	const updateDateTime = () => {
 		const currentDateTime = new Date();
@@ -107,7 +118,53 @@ export default function Home() {
 				<div className="left-container"></div>
 				<div className="right-container">
 					<div className="video-container">
-						<div>Video Streaming</div>
+						<div className='main-video-container'>
+							<Swiper
+								loop={true}
+								spaceBetween={10}
+								thumbs={{ swiper: thumbsSwiper }}
+								modules={[FreeMode, Navigation, Thumbs]}
+								className='mySwiper2'
+							>
+								<SwiperSlide>
+								<img src="/background.png" />
+								</SwiperSlide>
+								<SwiperSlide>
+								<img src="/background.png" />
+								</SwiperSlide>
+								<SwiperSlide>
+								<img src="/background.png" />
+								</SwiperSlide>
+								<SwiperSlide>
+								<img src="/background.png" />
+								</SwiperSlide>
+							</Swiper>
+						</div>
+						<div className='sub-video-container'>
+							<Swiper
+								onSwiper={handleSwiper}
+								loop={true}
+								spaceBetween={9}
+								slidesPerView={4}
+								freeMode={true}
+								watchSlidesProgress={true}
+								modules={[FreeMode, Navigation, Thumbs]}
+								className="mySwiper"
+							>
+								<SwiperSlide>
+								<img src="/background.png" />
+								</SwiperSlide>
+								<SwiperSlide>
+								<img src="/background.png" />
+								</SwiperSlide>
+								<SwiperSlide>
+								<img src="/background.png" />
+								</SwiperSlide>
+								<SwiperSlide>
+								<img src="/background.png" />
+								</SwiperSlide>
+							</Swiper>
+						</div>
 					</div>
 					<div className="detail-container">
 						<div className="speed-container">
