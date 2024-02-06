@@ -96,6 +96,23 @@
     box-sizing: border-box;
     margin-top: 4px;
   }
+
+  .input-field-error {
+    width: 359px;
+    height: 32px;
+    color: black;
+    border-radius: 10px;
+    border: 1px solid red;
+    padding: 0 10px;
+    box-sizing: border-box;
+    margin-top: 4px;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 18px;
+    font-family: 'Istok Web';
+  }
   
   .login-button {
     width: 267px;

@@ -95,6 +95,7 @@ export default function Home() {
 	};
 
 	const handleLogout = () => {
+		localStorage.removeItem('token');
 		console.log('Already Logout.');
 		router.push('/login');
 	};
