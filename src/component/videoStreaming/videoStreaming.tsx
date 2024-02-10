@@ -6,8 +6,6 @@ import styled from "styled-components";
 // @ts-ignore
 import MRecordRTC from "recordrtc";
 import { TailSpin } from "react-loader-spinner";
-// import { detectVideo } from "./detectVideo";
-// import { Tensor, InferenceSession } from "onnxruntime-web";
 
 type StreamVideoProps = {
   carID: string;
@@ -119,26 +117,26 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
     return navigator.mediaDevices.getUserMedia(constraints);
   };
 
-//   useEffect(() => {
-//     // Load YOLOv8 model when the component mounts
-//     const loadModel = async () => {
-//       const baseModelURL = `${process.env.PUBLIC_URL}/model`;
+  // useEffect(() => {
+  //   // Load YOLOv8 model when the component mounts
+  //   const loadModel = async () => {
+  //     const baseModelURL = `${process.env.PUBLIC_URL}/model`;
 
-//       const arrBufNet = await fetch(`${baseModelURL}/${modelName}`).then(
-//         (response) => response.arrayBuffer()
-//       );
-//       const yolov8 = await InferenceSession.create(arrBufNet);
+  //     const arrBufNet = await fetch(`${baseModelURL}/${modelName}`).then(
+  //       (response) => response.arrayBuffer()
+  //     );
+  //     const yolov8 = await InferenceSession.create(arrBufNet);
 
-//       const arrBufNMS = await fetch(`${baseModelURL}/nms-yolov8.onnx`).then(
-//         (response) => response.arrayBuffer()
-//       );
-//       const nms = await InferenceSession.create(arrBufNMS);
+  //     const arrBufNMS = await fetch(`${baseModelURL}/nms-yolov8.onnx`).then(
+  //       (response) => response.arrayBuffer()
+  //     );
+  //     const nms = await InferenceSession.create(arrBufNMS);
 
-//       session.current = { net: yolov8, nms };
-//     };
+  //     session.current = { net: yolov8, nms };
+  //   };
 
-//     loadModel();
-//   }, []);
+  //   loadModel();
+  // }, []);
 
   useEffect(() => {
     // Start streaming and object detection when the webcam stream is available
@@ -150,17 +148,17 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
       roomID &&
       roomID != undefined
     ) {
-    //   detectVideo(
-    //     userVideo.current,
-    //     canvasRef.current,
-    //     session.current,
-    //     topk,
-    //     iouThreshold,
-    //     scoreThreshold,
-    //     modelInputShape,
-    //     socket.current,
-    //     roomID
-    //   );
+      // detectVideo(
+      //   userVideo.current,
+      //   canvasRef.current,
+      //   session.current,
+      //   topk,
+      //   iouThreshold,
+      //   scoreThreshold,
+      //   modelInputShape,
+      //   socket.current,
+      //   roomID
+      // );
       isDetect.current = true;
       startRecording(stream);
     }
