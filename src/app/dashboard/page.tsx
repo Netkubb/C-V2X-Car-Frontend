@@ -171,6 +171,7 @@ export default function Home() {
 				</LoadScript>
 				</div>
 			</div>
+			
 			<div className="right-container">
 				{scriptsLoaded ? <div className="video-container">
 					<div className='main-video-container'>
@@ -183,20 +184,39 @@ export default function Home() {
 						>
 							<SwiperSlide>
 							{/* <img src="/background.png" /> */}
-							<StreamVideo 
+								<StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65940703ce9bc3c043a77615"}
 								sourceNumber={0}
-								isShowObjectDetection={false}/>
+								isShowObjectDetection={isObjectDetectionOn}
+								isStream={true}/>
 							</SwiperSlide>
+								
 							<SwiperSlide>
-							<img src="/background.png" />
+								<StreamVideo 
+								carID={`65ac9720191a85b6842de0ec`}
+								camNumber={"65b6ff827c8483c5c4a474a5"}
+								sourceNumber={0}
+								isShowObjectDetection={isObjectDetectionOn}
+								isStream={true}/>
 							</SwiperSlide>
+
 							<SwiperSlide>
-							<img src="/background.png" />
+								<StreamVideo 
+								carID={`65ac9720191a85b6842de0ec`}
+								camNumber={"65b6ff927c8483c5c4a474ab"}
+								sourceNumber={0}
+								isShowObjectDetection={isObjectDetectionOn}
+								isStream={true}/>
 							</SwiperSlide>
+
 							<SwiperSlide>
-							<img src="/background.png" />
+								<StreamVideo 
+								carID={`65ac9720191a85b6842de0ec`}
+								camNumber={"65b6ff9c7c8483c5c4a474b1"}
+								sourceNumber={0}
+								isShowObjectDetection={isObjectDetectionOn}
+								isStream={true}/>
 							</SwiperSlide>
 						</Swiper>
 					</div>
@@ -212,16 +232,36 @@ export default function Home() {
 							className="mySwiper"
 						>
 							<SwiperSlide>
-							<img src="/background.png" />
+								<StreamVideo 
+								carID={`65ac9720191a85b6842de0ec`}
+								camNumber={"65940703ce9bc3c043a77615"}
+								sourceNumber={0}
+								isShowObjectDetection={isObjectDetectionOn}
+								isStream={false}/>
 							</SwiperSlide>
 							<SwiperSlide>
-							<img src="/background.png" />
+								<StreamVideo 
+								carID={`65ac9720191a85b6842de0ec`}
+								camNumber={"65b6ff827c8483c5c4a474a5"}
+								sourceNumber={0}
+								isShowObjectDetection={isObjectDetectionOn}
+								isStream={false}/>
 							</SwiperSlide>
 							<SwiperSlide>
-							<img src="/background.png" />
+								<StreamVideo 
+								carID={`65ac9720191a85b6842de0ec`}
+								camNumber={"65b6ff927c8483c5c4a474ab"}
+								sourceNumber={0}
+								isShowObjectDetection={isObjectDetectionOn}
+								isStream={false}/>
 							</SwiperSlide>
 							<SwiperSlide>
-							<img src="/background.png" />
+								<StreamVideo 
+								carID={`65ac9720191a85b6842de0ec`}
+								camNumber={"65b6ff9c7c8483c5c4a474b1"}
+								sourceNumber={0}
+								isShowObjectDetection={isObjectDetectionOn}
+								isStream={false}/>
 							</SwiperSlide>
 						</Swiper>
 					</div>

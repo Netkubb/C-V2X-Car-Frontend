@@ -6,12 +6,14 @@ import styled from "styled-components";
 // @ts-ignore
 import MRecordRTC from "recordrtc";
 import { TailSpin } from "react-loader-spinner";
+import RenderBoxes from "./renderBox"
 
 type StreamVideoProps = {
   carID: string;
   camNumber: string;
   sourceNumber: number;
   isShowObjectDetection: boolean;
+  isStream: boolean;
 };
 
 const LoadingSpinner: React.FC = () => (
@@ -56,6 +58,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
   camNumber,
   sourceNumber,
   isShowObjectDetection,
+  isStream,
 }) => {
   const connection = useRef<RTCMultiConnection>();
   const [stream, setStream] = useState<MediaStream | undefined>();
@@ -139,6 +142,19 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
   // }, []);
 
   useEffect(() => {
+		if (socket.current && canvasRef.current && connection.current && isShowObjectDetection)
+      socket.current.emit('control center connecting', {
+        roomID: connection.current.sessionid,
+      });
+			socket?.current?.on('send object detection', (boxes: Array<any>) => {
+				// console.log(boxes)
+				if (canvasRef.current) {
+					RenderBoxes({ canvas: canvasRef.current, boxes: boxes });
+				}
+			});
+	}, [canvasRef.current, socket.current, connection.current, isShowObjectDetection]);
+
+  useEffect(() => {
     // Start streaming and object detection when the webcam stream is available
     if (
       stream &&
@@ -205,10 +221,12 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
           );
 
           connection.current.attachStreams = [video];
-          startStreaming();
-          setInterval(() => {
+          if (isStream){
             startStreaming();
-          }, 60000);
+            setInterval(() => {
+              startStreaming();
+            }, 60000);
+          }
         });
     }
   }, []);
@@ -280,11 +298,46 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
     };
   }, []);
 
-  console.log(isOnline)
+  useEffect(() => {
+		if (stream) {
+			if (userVideo.current) {
+				userVideo.current.srcObject = stream;
+				userVideo.current.onloadedmetadata = () => {
+					if (userVideo.current) {
+						const container = userVideo.current.parentElement;
+						if (container) {
+							const containerWidth = container.clientWidth;
+							const containerHeight = container.clientHeight;
+
+							userVideo.current.width = containerWidth;
+							userVideo.current.height = containerHeight;
+							// setIsLoading(false);
+						
+              if(canvasRef.current){
+                canvasRef.current.width = containerWidth;
+                canvasRef.current.height = containerHeight;
+              }
+            }
+					}
+				};
+			}
+		}
+	}, [stream]);
+
+  // useEffect(() => {
+	// 	if (stream && canvasRef.current && userVideo.current) {
+	// 		// const parentBox = canvasRef.current.parentElement;
+    
+  //     canvasRef.current.width = userVideo.current.width;
+  //     canvasRef.current.height = userVideo.current.height;
+    
+			
+	// 	}
+	// }, [stream, canvasRef.current, userVideo.current]);
 
   return (
     <VideoContainer id={`videos-container${camNumber}`}>
-      <Status online={isOnline} />
+      {isStream ? <Status online={isOnline} />:null}
       <div>
         {stream ? (
           <>
