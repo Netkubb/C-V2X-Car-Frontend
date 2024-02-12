@@ -14,7 +14,6 @@ import 'swiper/css/free-mode';
 import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import StreamVideo from '@/component/videoStreaming/videoStreaming';
-import Script from 'next/script';
 
 export default function Home() {
 	const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -123,6 +122,8 @@ export default function Home() {
 	const handleConfirmEmergency = () => {
 		setIsButtonVisible(!isButtonVisible);
 		console.log('An emergency has been sent.');
+		const audio = new Audio('/noti.mp3');
+    	audio.play();
 		setIsPopupVisible(true);
 
 		setTimeout(() => {
@@ -184,39 +185,39 @@ export default function Home() {
 						>
 							<SwiperSlide>
 							{/* <img src="/background.png" /> */}
-								<StreamVideo 
+								{/* <StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65940703ce9bc3c043a77615"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={true}/>
+								isStream={true}/> */}
 							</SwiperSlide>
 								
 							<SwiperSlide>
-								<StreamVideo 
+								{/* <StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff827c8483c5c4a474a5"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={true}/>
+								isStream={true}/> */}
 							</SwiperSlide>
 
 							<SwiperSlide>
-								<StreamVideo 
+								{/* <StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff927c8483c5c4a474ab"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={true}/>
+								isStream={true}/> */}
 							</SwiperSlide>
 
 							<SwiperSlide>
-								<StreamVideo 
+								{/* <StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff9c7c8483c5c4a474b1"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={true}/>
+								isStream={true}/> */}
 							</SwiperSlide>
 						</Swiper>
 					</div>
@@ -232,36 +233,36 @@ export default function Home() {
 							className="mySwiper"
 						>
 							<SwiperSlide>
-								<StreamVideo 
+								{/* <StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65940703ce9bc3c043a77615"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={false}/>
+								isStream={false}/> */}
 							</SwiperSlide>
 							<SwiperSlide>
-								<StreamVideo 
+								{/* <StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff827c8483c5c4a474a5"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={false}/>
+								isStream={false}/> */}
 							</SwiperSlide>
 							<SwiperSlide>
-								<StreamVideo 
+								{/* <StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff927c8483c5c4a474ab"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={false}/>
+								isStream={false}/> */}
 							</SwiperSlide>
 							<SwiperSlide>
-								<StreamVideo 
+								{/* <StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff9c7c8483c5c4a474b1"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={false}/>
+								isStream={false}/> */}
 							</SwiperSlide>
 						</Swiper>
 					</div>
@@ -301,7 +302,9 @@ export default function Home() {
 							)}
 							{isPopupVisible && (
 								<div className="popup">
-									<p>An emergency has been sent!</p>
+									<p className='popup-header'>Notification</p>
+									<div className='popup-separator'></div>
+									<p className='popup-content'>An emergency has been sent!</p>
 								</div>
 							)}
 						</div>
