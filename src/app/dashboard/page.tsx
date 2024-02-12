@@ -311,12 +311,12 @@ export default function Home() {
 						<div className="button-container">
 							<div>
 								{isObjectDetectionOn && (
-									<button className="od-button" onClick={handleObjectDetection}>
+									<button className="od-button-on" onClick={handleObjectDetection}>
 										<img src="/objDetectOn.png" alt="objDetectOn Icon" width="50" height="50" />
 									</button>
 								)}
 								{!isObjectDetectionOn && (
-									<button className="od-button" onClick={handleObjectDetection}>
+									<button className="od-button-off" onClick={handleObjectDetection}>
 										<img src="/objDetectOff.png" alt="objDetectOff Icon" width="50" height="50" />
 									</button>
 								)}

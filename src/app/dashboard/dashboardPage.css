@@ -292,12 +292,24 @@
     flex-direction: row;
 }
 
-.od-button {
+.od-button-on {
     width: 222.5px;
     height: 101px;
     margin-right: 10.5px;
     background-color: rgb(23,165,211);
     border: none;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+}
+
+.od-button-off {
+    width: 222.5px;
+    height: 101px;
+    margin-right: 10.5px;
+    background-color: rgb(255, 255, 255);
+    border-color: rgb(151,151,151);
+    border-width: 2px;
     border-radius: 10px;
     display: grid;
     place-items: center;
