@@ -21,6 +21,7 @@ export default function Home() {
 	const [time, setTime] = useState('');
 	const [isButtonVisible, setIsButtonVisible] = useState(true);
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
+	const [isLocationUndefined, setIsLocationUndefined] = useState(false);
 	const [isObjectDetectionOn, setIsObjectDetectionOn] = useState(false);
 	const router = useRouter();
 
@@ -121,13 +122,29 @@ export default function Home() {
 
 	const handleConfirmEmergency = () => {
 		setIsButtonVisible(!isButtonVisible);
-		console.log('An emergency has been sent.');
+		console.log(latitude+' '+longitude);
+		
+		if (typeof latitude === 'undefined' || typeof longitude === 'undefined') {
+			console.log('Sent emergency failed : latitude or longitude is undefined.');
+			setIsLocationUndefined(true);
+		}
+		else{
+			const socket = io(`http://localhost:8002`);
+			socket.emit('emergency', {
+				token: localStorage.getItem('token'),
+				car_id: localStorage.getItem('car_id'),
+				latitude: latitude,
+				longitude: longitude,
+			});
+			console.log('An emergency has been sent.');
+		}
 		const audio = new Audio('/noti.mp3');
     	audio.play();
 		setIsPopupVisible(true);
 
 		setTimeout(() => {
 			setIsPopupVisible(false);
+			setIsLocationUndefined(false);
 		}, 3000);
 	};
 
@@ -143,6 +160,8 @@ export default function Home() {
 
 	const handleLogout = () => {
 		localStorage.removeItem('token');
+		localStorage.removeItem('role');
+        localStorage.removeItem('car_id');
 		console.log('Already Logout.');
 		router.push('/login');
 	};
@@ -300,11 +319,18 @@ export default function Home() {
 									</button>
 								</div>
 							)}
-							{isPopupVisible && (
+							{isPopupVisible && !isLocationUndefined &&(
 								<div className="popup">
 									<p className='popup-header'>Notification</p>
 									<div className='popup-separator'></div>
 									<p className='popup-content'>An emergency has been sent!</p>
+								</div>
+							)}
+							{isPopupVisible && isLocationUndefined &&(
+								<div className="popup">
+									<p className='popup-header'>Notification</p>
+									<div className='popup-separator'></div>
+									<p className='popup-content'>Sent emergency failed :<br/>latitude or longitude is undefined!</p>
 								</div>
 							)}
 						</div>

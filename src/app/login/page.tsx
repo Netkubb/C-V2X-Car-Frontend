@@ -13,13 +13,15 @@ export default function Home() {
 
   const handleLogin = async() => {
     try {
-        const response = await axios.post('https://c-v2x-backend.onrender.com/api/auth/login', {
+        const response = await axios.post('http://localhost:5000/api/auth/login', {
           username: username,
           password: password
         });
     
-        const token = response.data.token;
-        localStorage.setItem('token', token);
+        const data = response.data.data;
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('role', data.role);
+        localStorage.setItem('car_id', data.car_id);
         console.log('Login Success');
         router.push('/dashboard');
       } catch (error) {
