@@ -52,12 +52,18 @@ export default function Home() {
 		script2.src = 'https://muazkhan.com:9001/socket.io/socket.io.js';
 		script2.async = false; // Set to true if you want async loading
 
+
+		const script3 = document.createElement('script');
+		script3.src = "https://www.webrtc-experiment.com/RecordRTC.js";		;
+		script3.async = false; // Set to true if you want async loading
+		
 		const loadScripts = async () => {
 			document.body.appendChild(script1);
 			document.body.appendChild(script2);
+			document.body.appendChild(script3);
 
 			await new Promise((resolve) => {
-				script1.onload = script2.onload = resolve;
+				script1.onload = script2.onload = script3.onload = resolve;
 			});
 
 			setScriptsLoaded(true);
@@ -69,6 +75,7 @@ export default function Home() {
 		return () => {
 			document.body.removeChild(script1);
 			document.body.removeChild(script2);
+			document.body.removeChild(script3);
 		};
 	}, []);
 
@@ -204,39 +211,39 @@ export default function Home() {
 						>
 							<SwiperSlide>
 							{/* <img src="/background.png" /> */}
-								{/* <StreamVideo 
+								<StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65940703ce9bc3c043a77615"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={true}/> */}
+								isStream={true}/>
 							</SwiperSlide>
 								
 							<SwiperSlide>
-								{/* <StreamVideo 
+								<StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff827c8483c5c4a474a5"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={true}/> */}
+								isStream={true}/>
 							</SwiperSlide>
 
 							<SwiperSlide>
-								{/* <StreamVideo 
+								<StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff927c8483c5c4a474ab"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={true}/> */}
+								isStream={true}/>
 							</SwiperSlide>
 
 							<SwiperSlide>
-								{/* <StreamVideo 
+								<StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff9c7c8483c5c4a474b1"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={true}/> */}
+								isStream={true}/>
 							</SwiperSlide>
 						</Swiper>
 					</div>
@@ -252,36 +259,36 @@ export default function Home() {
 							className="mySwiper"
 						>
 							<SwiperSlide>
-								{/* <StreamVideo 
+								<StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65940703ce9bc3c043a77615"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={false}/> */}
+								isStream={false}/>
 							</SwiperSlide>
 							<SwiperSlide>
-								{/* <StreamVideo 
+								<StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff827c8483c5c4a474a5"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={false}/> */}
+								isStream={false}/>
 							</SwiperSlide>
 							<SwiperSlide>
-								{/* <StreamVideo 
+								<StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff927c8483c5c4a474ab"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={false}/> */}
+								isStream={false}/>
 							</SwiperSlide>
 							<SwiperSlide>
-								{/* <StreamVideo 
+								<StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65b6ff9c7c8483c5c4a474b1"}
 								sourceNumber={0}
 								isShowObjectDetection={isObjectDetectionOn}
-								isStream={false}/> */}
+								isStream={false}/>
 							</SwiperSlide>
 						</Swiper>
 					</div>

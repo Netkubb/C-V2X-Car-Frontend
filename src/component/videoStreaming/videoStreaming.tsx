@@ -3,8 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import RTCMultiConnection from "rtcmulticonnection";
 import { io, Socket } from 'socket.io-client';
 import styled from "styled-components";
-// @ts-ignore
-import MRecordRTC from "recordrtc";
+// import MRecordRTC from "recordrtc";
 import { TailSpin } from "react-loader-spinner";
 import RenderBoxes from "./renderBox"
 
@@ -65,14 +64,14 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
   const socket = useRef<Socket>();
   const userVideo = useRef<HTMLVideoElement>(null);
   const [isOnline, setIsOnline] = useState<boolean>(false);
-  const recorder = useRef<MRecordRTC>();
+  // const recorder = useRef<MRecordRTC>();
   const isOnlineRef = useRef<boolean>(false);
   const session = useRef<any>(); // Adjust the type according to your needs
-  const modelName = "yolov8n.onnx";
-  const modelInputShape: number[] = [1, 3, 640, 640];
-  const topk: number = 100;
-  const iouThreshold: number = 0.45;
-  const scoreThreshold: number = 0.65;
+  // const modelName = "yolov8n.onnx";
+  // const modelInputShape: number[] = [1, 3, 640, 640];
+  // const topk: number = 100;
+  // const iouThreshold: number = 0.45;
+  // const scoreThreshold: number = 0.65;
   const isDetect = useRef<boolean>(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [roomID, setRoomID] = useState<string | null>(null);
@@ -159,10 +158,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
     if (
       stream &&
       userVideo.current &&
-      session.current &&
-      !isDetect.current &&
-      roomID &&
-      roomID != undefined
+      session.current
     ) {
       // detectVideo(
       //   userVideo.current,
@@ -175,10 +171,9 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
       //   socket.current,
       //   roomID
       // );
-      isDetect.current = true;
-      startRecording(stream);
+      // startRecording(stream);
     }
-  }, [stream, session.current, roomID]);
+  }, [stream, session.current]);
 
   useEffect(() => {
     if (!connection.current) {
@@ -249,54 +244,56 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
     );
   };
 
-  const startRecording = (stream: MediaStream) => {
-    if (stream) {
-      recorder.current = new MRecordRTC(stream, {
-        type: "video",
-        mimeType: "video/webm",
-      });
+  // const startRecording = (stream: MediaStream) => {
+  //   if (stream) {
+  //     recorder.current = new MRecordRTC(stream, {
+  //       type: "video",
+  //       mimeType: "video/webm",
+  //     });
 
-      recorder.current.startRecording();
-    } else {
-      console.error("Cannot start recording, stream is undefined");
-    }
-  };
-  const stopRecording = () => {
-    if (recorder.current) {
-      recorder.current.stopRecording(function (url:string) {
-        const videoBlob = recorder.current.getBlob();
-        const videoUrl = URL.createObjectURL(videoBlob);
+  //     recorder.current.startRecording();
+  //   } else {
+  //     console.error("Cannot start recording, stream is undefined");
+  //   }
+  // };
+  // const stopRecording = () => {
+  //   if (recorder.current) {
+  //     recorder.current.stopRecording(function () {
+  //       const videoBlob = recorder.current?.getBlob();
+  //       if (videoBlob){
+  //         const videoUrl = URL.createObjectURL(videoBlob);
+  
+  //         const videoElement = document.getElementById("saveVDO");
+  
+  //         if (videoElement instanceof HTMLVideoElement) {
+  //           videoElement.src = videoUrl;
+  //           videoElement.play();
+  //         } else {
+  //           console.error("Video element not found in the DOM");
+  //         }
+  //         console.log(videoUrl);
+  //         recorder.current?.save((new Date()).toDateString()); // Save the recorded video
+  //       } 
+  //     });
+  //   } else {
+  //     console.error("Cannot stop recording, recorder is undefined");
+  //   }
+  // };
 
-        const videoElement = document.getElementById("saveVDO");
+  // useEffect(() => {
+  //   const handleBeforeUnload = () => {
+  //     if (isDetect.current) {
+  //       stopRecording();
+  //     }
+  //   };
+  //   window.addEventListener("popstate", handleBeforeUnload);
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
 
-        if (videoElement instanceof HTMLVideoElement) {
-          videoElement.src = videoUrl;
-          videoElement.play();
-        } else {
-          console.error("Video element not found in the DOM");
-        }
-        console.log(videoUrl);
-        recorder.current.save(); // Save the recorded video
-      });
-    } else {
-      console.error("Cannot stop recording, recorder is undefined");
-    }
-  };
-
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (isDetect.current) {
-        stopRecording();
-      }
-    };
-    window.addEventListener("popstate", handleBeforeUnload);
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("popstate", handleBeforeUnload);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //     window.removeEventListener("popstate", handleBeforeUnload);
+  //   };
+  // }, []);
 
   useEffect(() => {
 		if (stream) {
