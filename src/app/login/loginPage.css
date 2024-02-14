@@ -15,8 +15,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 1308px;
-    height: 686px;
+    width: 1536px;
+    height: 864px;
     background-color: white;
     border-radius: 20px;
     border: 2px solid black;
@@ -27,15 +27,15 @@
   }
   
   .card-container {
-    width: 1308px;
-    height: 686px;
+    width: 1536px;
+    height: 864px;
     display: flex;
     flex-direction: row;
   }
   
   .welcome-container {
-    width: 695px;
-    height: 686px;
+    width: 816px;
+    height: 864px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -44,16 +44,16 @@
   
   .welcome-text {
     color: black;
-    font-size: 40px;
+    font-size: 45px;
     font-family: 'Inter';
     font-weight: '600';
-    line-height: 40px;
+    line-height: 45px;
     word-wrap: 'break-word';
   }
   
   .v2x-text {
     color: black;
-    font-size: 30px;
+    font-size: 35px;
     font-family: 'Istok Web';
     font-weight: '700';
     word-wrap: 'break-word';
@@ -62,8 +62,8 @@
   }
   
   .login-container {
-    width: 613px;
-    height: 686px;
+    width: 720px;
+    height: 864px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -71,54 +71,56 @@
   
   .signin-text {
     color: black;
-    font-size: 40px;
+    font-size: 45px;
     font-family: 'Inter';
     font-weight: '600';
-    line-height: 22px;
+    line-height: 45px;
     word-wrap: 'break-word';
   }
   
   .label-text {
     color: black;
-    font-size: 20px;
+    font-size: 30px;
     font-family: 'Istok Web';
     font-weight: '700';
     word-wrap: 'break-word';
   }
   
   .input-field {
-    width: 359px;
-    height: 32px;
+    width: 421px;
+    height: 40px;
     color: black;
-    border-radius: 10px;
+    font-size: 20px;
+    border-radius: 15px;
     border: 1px solid black;
-    padding: 0 10px;
+    padding: 0 20px;
     box-sizing: border-box;
     margin-top: 4px;
   }
 
   .input-field-error {
-    width: 359px;
-    height: 32px;
+    width: 421px;
+    height: 40px;
     color: black;
-    border-radius: 10px;
+    font-size: 20px;
+    border-radius: 15px;
     border: 1px solid red;
-    padding: 0 10px;
+    padding: 0 20px;
     box-sizing: border-box;
     margin-top: 4px;
   }
 
   .error-message {
     color: red;
-    font-size: 18px;
+    font-size: 20px;
     font-family: 'Istok Web';
   }
   
   .login-button {
-    width: 267px;
-    height: 49px;
+    width: 313px;
+    height: 55px;
     color: white;
-    font-size: 20px;
+    font-size: 30px;
     font-family: 'Istok Web';
     font-weight: '700';
     word-wrap: 'break-word';

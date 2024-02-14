@@ -41,7 +41,7 @@ export default function Home() {
                     </div>
                     <div className='login-container'>
                         <div className='signin-text'>Sign in</div>
-                        <div style={{ marginTop: 81}}>
+                        <div style={{ marginTop: 102}}>
                             <div className='label-text'>Username</div>
                             <input
                                 className={isError ? 'input-field-error' : 'input-field'}
@@ -51,7 +51,7 @@ export default function Home() {
                                 onChange={(e) => setUsername(e.target.value)}
                             />
                         </div>
-                        <div style={{ marginTop: 48}}>
+                        <div style={{ marginTop: 60}}>
                             <div className='label-text'>Password</div>
                             <input
                                 className={isError ? 'input-field-error' : 'input-field'}
@@ -61,12 +61,12 @@ export default function Home() {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
-                        <div style={{ height: 18, marginTop: 11}}>
+                        <div style={{ height: 20, marginTop: 13}}>
                             {isError && (
                                 <div className="error-message" id="error-message">Incorrect Username or Password !!</div>
 							)}
                         </div>
-                        <div style={{ marginTop: 46.5}}>
+                        <div style={{ marginTop: 58.5}}>
                             <button className='login-button' onClick={handleLogin}>Login</button>
                         </div>
                     </div>
