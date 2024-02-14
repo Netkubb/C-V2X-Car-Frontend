@@ -27,6 +27,7 @@ export default function Home() {
 
 	// car info
 	const [speed, setSpeed] = useState(0.0);
+	const [unit, setUnit] = useState('');
 	const [latitude, setLatitude] = useState(0.0);
 	const [longitude, setLongitude] = useState(0.0);
 
@@ -110,6 +111,7 @@ export default function Home() {
 		socket.on('car info', (message) => {
 			console.log(message);
 			setSpeed(message['velocity']);
+			setUnit(message['unit']);
 			setLatitude(message['latitude']);
 			setLongitude(message['longitude']);
 		});
@@ -299,10 +301,12 @@ export default function Home() {
 						<div className="current-speed-container">
 							<div className="speed-text">Current Speed</div>
 							<div className="speed-speed">{speed.toFixed(1)}</div>
+							<div className="speed-unit">{unit}</div>
 						</div>
 						<div className="recommend-speed-container">
 							<div className="speed-text">Recommend Speed</div>
 							<div className="speed-speed">{recSpeed.toFixed(1)}</div>
+							<div className="speed-unit">{unit}</div>
 						</div>
 					</div>
 					<div className="another-detail-container">
