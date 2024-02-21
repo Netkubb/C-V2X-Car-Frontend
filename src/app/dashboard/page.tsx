@@ -209,10 +209,11 @@ export default function Home() {
 							spaceBetween={10}
 							thumbs={{ swiper: thumbsSwiper }}
 							modules={[FreeMode, Navigation, Thumbs]}
+							allowTouchMove={false}
+							speed={0}
 							className='mySwiper2'
 						>
 							<SwiperSlide>
-							{/* <img src="/background.png" /> */}
 								<StreamVideo 
 								carID={`65ac9720191a85b6842de0ec`}
 								camNumber={"65940703ce9bc3c043a77615"}
