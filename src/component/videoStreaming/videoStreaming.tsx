@@ -20,7 +20,7 @@ const LoadingSpinner: React.FC = () => (
 );
 
 const Video = styled.video`
-  width: 100%;
+  width: 727px;
   height: auto;
 `;
 
