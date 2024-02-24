@@ -106,7 +106,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
       console.error("No video input devices found");
       return;
     }
-
+    console.log(videoDevices)
     const selectedDevice = videoDevices[Number(sourceNumber)].deviceId;
 
     const constraints = {
