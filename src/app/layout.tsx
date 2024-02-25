@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Istok_Web } from 'next/font/google';
 import './globals.css';
+import LayoutWrapper from '@/components/LayoutWrapper';
 
 const istok_web = Istok_Web({
 	weight: ['400', '700'],
@@ -21,7 +22,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" className={`${istok_web.variable} font-sans`}>
 			<body id="__next" suppressHydrationWarning={true}>
-				{children}
+				<LayoutWrapper>{children}</LayoutWrapper>
 			</body>
 		</html>
 	);
