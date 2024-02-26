@@ -9,18 +9,24 @@ export interface AuthData {
 	role: string;
 	car_id: string;
 }
-
 interface CarData {
 	speed: number;
 	unit: string;
 	latitude: number;
 	longitude: number;
 }
-
 interface RSUData {
 	rec_speed: number;
+	unit: string;
 	latitude: number;
 	longitude: number;
+}
+interface ReportData {
+	type: 'ACCIDENT' | 'CLOSED ROAD' | 'CONSTRUCTION' | 'TRAFFIC CONGESTION';
+	rsu_id: string;
+	latitude: number;
+	longitude: number;
+	timestamp: Date;
 }
 
 export const AuthContext = createContext<
@@ -28,6 +34,7 @@ export const AuthContext = createContext<
 >([{} as AuthData, () => {}]);
 export const CarContext = createContext<CarData>({} as CarData);
 export const RSUContext = createContext<RSUData>({} as RSUData);
+export const ReportContext = createContext<ReportData[]>([]);
 
 export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	const [auth, setAuth] = useState<AuthData>({
@@ -43,9 +50,11 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	});
 	const [rsu, setRSU] = useState<RSUData>({
 		rec_speed: 0.0,
+		unit: 'km/h',
 		latitude: 0.0,
 		longitude: 0.0,
 	});
+	const [reports, setReports] = useState<ReportData[]>([]);
 
 	const socket = io(`http://localhost:8002`);
 	socket.on('connect', () => {
@@ -62,9 +71,13 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	socket.on('rsu info', (message) => {
 		setRSU({
 			rec_speed: message['recommend_speed'],
+			unit: message['unit'],
 			latitude: message['latitude'],
 			longitude: message['longitude'],
 		});
+	});
+	socket.on('reports info', (message) => {
+		setReports(message);
 	});
 	socket.on('disconnect', () => {
 		console.log('Disconnected from OBU backend');
@@ -87,7 +100,9 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 			<AuthContext.Provider value={[auth, setAuth]}>
 				<CarContext.Provider value={car}>
 					<RSUContext.Provider value={rsu}>
-						{props.children}
+						<ReportContext.Provider value={reports}>
+							{props.children}
+						</ReportContext.Provider>
 					</RSUContext.Provider>
 				</CarContext.Provider>
 			</AuthContext.Provider>

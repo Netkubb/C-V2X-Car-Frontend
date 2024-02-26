@@ -12,6 +12,7 @@ import {
 	AuthData,
 	CarContext,
 	RSUContext,
+	ReportContext,
 } from '@/components/LayoutWrapper';
 import TextContentBox from '@/components/TextContentBox';
 import VideosSection from '@/components/VideosSection';
@@ -27,6 +28,7 @@ export default function Home() {
 	const [auth, setAuth] = useContext(AuthContext);
 	const car = useContext(CarContext);
 	const rsu = useContext(RSUContext);
+	const reports = useContext(ReportContext);
 
 	const [isButtonVisible, setIsButtonVisible] = useState(true);
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
@@ -34,7 +36,7 @@ export default function Home() {
 	const [isObjectDetectionOn, setIsObjectDetectionOn] = useState(false);
 	const router = useRouter();
 
-	const location = {
+	const carLocation = {
 		lat: car.latitude,
 		lng: car.longitude,
 	} as google.maps.LatLngLiteral;
@@ -91,11 +93,24 @@ export default function Home() {
 						<GoogleMap
 							mapContainerClassName="z-0 h-full w-full rounded-md"
 							zoom={14}
-							center={location}
+							center={carLocation}
 							options={{ disableDefaultUI: true }}
 						>
-							<Marker icon={{ url: '/car_pin.svg' }} position={location} />
+							<Marker icon={{ url: '/car_pin.svg' }} position={carLocation} />
 							<Marker icon={{ url: '/rsu_pin.svg' }} position={rsuLocation} />
+							{reports.map((report) => {
+								const reportLocation = {
+									lat: report.latitude,
+									lng: report.longitude,
+								} as google.maps.LatLngLiteral;
+
+								return (
+									<Marker
+										icon={{ url: '/rsu_pin.svg' }} // change to report pin
+										position={reportLocation}
+									/>
+								);
+							})}
 						</GoogleMap>
 					)}
 				</div>
@@ -120,7 +135,7 @@ export default function Home() {
 								<TextContentBox
 									title="Recommend Speed"
 									content={rsu.rec_speed.toFixed(1)}
-									helperText={car.unit}
+									helperText={rsu.unit}
 								/>
 							</div>
 							<div className="h-full w-3/5 flex flex-col gap-12">
