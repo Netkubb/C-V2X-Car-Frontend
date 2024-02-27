@@ -15,30 +15,6 @@ type StreamVideoProps = {
 	isStream: boolean;
 };
 
-const LoadingSpinner: React.FC = () => (
-	<TailSpin color="white" height={50} width={50} />
-);
-
-const Video = styled.video`
-	width: auto;
-	height: auto;
-`;
-
-const BlackWindow = styled.div`
-	width: 640px;
-	height: 480px;
-	background-color: black;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-`;
-
-const VideoContainer = styled.div`
-	position: relative;
-	display: flex;
-	justify-content: space-between;
-`;
-
 const Status = styled.div<{ online: boolean }>`
 	position: absolute;
 	top: 0;
@@ -339,31 +315,38 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 	// }, [stream, canvasRef.current, userVideo.current]);
 
 	return (
-		<VideoContainer id={`videos-container${camNumber}`}>
-			{isStream ? <Status online={isOnline} /> : null}
-			<div>
-				{stream ? (
-					<>
-						<Video playsInline muted ref={userVideo} autoPlay />
-						<canvas
-							id="canvas"
-							ref={canvasRef}
-							style={{
-								position: 'absolute',
-								top: 0,
-								left: 0,
-								zIndex: 0,
-								display: isShowObjectDetection ? 'flex' : 'none',
-							}}
-						/>
-					</>
-				) : (
-					<BlackWindow>
-						<LoadingSpinner />
-					</BlackWindow>
-				)}
-			</div>
-		</VideoContainer>
+		<div
+			className={`flex relative w-full h-full ${
+				stream ? 'bg-light_grey' : 'bg-black'
+			} rounded-sm items-center justify-center`}
+			id={`videos-container${camNumber}`}
+		>
+			{isStream && <Status online={isOnline} />}
+			{stream ? (
+				<>
+					<video
+						className="h-full"
+						playsInline
+						muted
+						ref={userVideo}
+						autoPlay
+					/>
+					<canvas
+						id="canvas"
+						ref={canvasRef}
+						style={{
+							position: 'absolute',
+							top: 0,
+							left: 0,
+							zIndex: 0,
+							display: isShowObjectDetection ? 'flex' : 'none',
+						}}
+					/>
+				</>
+			) : (
+				<TailSpin color="white" height={50} width={50} />
+			)}
+		</div>
 	);
 };
 

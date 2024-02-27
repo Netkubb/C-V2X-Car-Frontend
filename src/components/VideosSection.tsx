@@ -17,16 +17,22 @@ export default function VideosSection({
 	const [camNumber, setCamNumber] = useState<string>(camNumbers[0]);
 	return (
 		<div className="w-full h-full flex flex-col gap-12 items-center p-12 bg-white rounded-md">
-			<StreamVideo
-				carID={carID}
-				camNumber={camNumber}
-				sourceNumber={0}
-				isShowObjectDetection={isObjectDetectionOn}
-				isStream={true}
-			/>
-			<div className="flex flex-row gap-8">
+			<div className="h-4/5 w-full">
+				<StreamVideo
+					carID={carID}
+					camNumber={camNumber}
+					sourceNumber={0}
+					isShowObjectDetection={isObjectDetectionOn}
+					isStream={true}
+				/>
+			</div>
+			<div className="flex flex-row gap-8 h-1/5 w-full">
 				{camNumbers.map((number) => (
-					<button key={number} onClick={() => setCamNumber(number)}>
+					<button
+						className="h-full w-full"
+						key={number}
+						onClick={() => setCamNumber(number)}
+					>
 						<StreamVideo
 							carID={carID}
 							camNumber={number}

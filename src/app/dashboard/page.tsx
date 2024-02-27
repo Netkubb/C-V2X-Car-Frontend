@@ -1,10 +1,5 @@
 'use client';
 
-import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
-import { useRouter } from 'next/navigation';
-import { useContext, useState } from 'react';
-import { io } from 'socket.io-client';
-
 import Button from '@/components/Button';
 import DateContextBox from '@/components/DateContextBox';
 import {
@@ -14,27 +9,35 @@ import {
 	RSUContext,
 	ReportContext,
 } from '@/components/LayoutWrapper';
+import Modal from '@/components/Modal';
 import TextContentBox from '@/components/TextContentBox';
 import VideosSection from '@/components/VideosSection';
 import { IconName } from '@/const/IconName';
-import Modal from '@/components/Modal';
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import { useRouter } from 'next/navigation';
+import { useContext, useEffect, useState } from 'react';
+import { io } from 'socket.io-client';
 
 export default function Home() {
-	const { isLoaded: isMapReady } = useLoadScript({
-		googleMapsApiKey:
-			process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '<GOOGLE-MAP-KEY>',
-	});
-
+	const router = useRouter();
 	const [auth, setAuth] = useContext(AuthContext);
 	const car = useContext(CarContext);
 	const rsu = useContext(RSUContext);
 	const reports = useContext(ReportContext);
 
+	useEffect(() => {
+		if (!auth.token || auth.token === '') router.push('/login');
+	}, [auth]);
+
+	const { isLoaded: isMapReady } = useLoadScript({
+		googleMapsApiKey:
+			process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '<GOOGLE-MAP-KEY>',
+	});
+
 	const [isButtonVisible, setIsButtonVisible] = useState(true);
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [notiMessage, setNotiMessage] = useState<string>('');
 	const [isObjectDetectionOn, setIsObjectDetectionOn] = useState(false);
-	const router = useRouter();
 
 	const carLocation = {
 		lat: car.latitude,
@@ -79,6 +82,8 @@ export default function Home() {
 		router.push('/login');
 	};
 
+	if (!auth.token || auth.token === '') return;
+
 	return (
 		<>
 			<Modal
@@ -116,8 +121,10 @@ export default function Home() {
 				</div>
 
 				<div className="h-full w-2/5 flex flex-col gap-12">
-					<VideosSection isObjectDetectionOn={isObjectDetectionOn} />
-					<div className="h-full w-full flex flex-col gap-12">
+					<div className="h-3/5">
+						<VideosSection isObjectDetectionOn={isObjectDetectionOn} />
+					</div>
+					<div className="h-2/5 w-full flex flex-col gap-12">
 						<div className="h-full w-full flex flex-row gap-12">
 							<div className="w-2/5">
 								<TextContentBox
