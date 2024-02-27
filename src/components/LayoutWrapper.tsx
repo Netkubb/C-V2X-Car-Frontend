@@ -26,7 +26,6 @@ interface ReportData {
 	rsu_id: string;
 	latitude: number;
 	longitude: number;
-	timestamp: Date;
 }
 
 export const AuthContext = createContext<
@@ -54,6 +53,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 		latitude: 0.0,
 		longitude: 0.0,
 	});
+	const [rsuId, setRsuId] = useState<string>('');
 	const [reports, setReports] = useState<ReportData[]>([]);
 
 	const socket = io(`http://localhost:8002`);
@@ -61,14 +61,16 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 		console.log('Connect to OBU backend');
 	});
 	socket.on('car info', (message) => {
-		setCar({
-			speed: message['velocity'],
-			unit: message['unit'],
-			latitude: message['latitude'],
-			longitude: message['longitude'],
-		});
+		if (message['id'] === auth.car_id)
+			setCar({
+				speed: message['velocity'],
+				unit: message['unit'],
+				latitude: message['latitude'],
+				longitude: message['longitude'],
+			});
 	});
 	socket.on('rsu info', (message) => {
+		setRsuId(message['rsu_id']);
 		setRSU({
 			rec_speed: message['recommend_speed'],
 			unit: message['unit'],
@@ -76,8 +78,18 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 			longitude: message['longitude'],
 		});
 	});
-	socket.on('reports info', (message) => {
-		setReports(message);
+	socket.on('reports info', (messages) => {
+		const rawReports = (messages as ReportData[])
+			.filter((message) => message['rsu_id'] === rsuId)
+			.map((message) => {
+				return {
+					type: message['type'],
+					rsu_id: message['rsu_id'],
+					latitude: message['latitude'],
+					longitude: message['longitude'],
+				};
+			});
+		setReports(rawReports);
 	});
 	socket.on('disconnect', () => {
 		console.log('Disconnected from OBU backend');
