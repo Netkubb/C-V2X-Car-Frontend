@@ -121,6 +121,10 @@ export default function Home() {
 			setRsuLatitude(message['latitude']);
 			setRsuLongitude(message['longitude']);
 		});
+		socket.on('incident report', (message) => {
+			console.log(message);
+			// do something about reports list
+		});
 
 		return () => clearInterval(intervalId);
 	}, []);
