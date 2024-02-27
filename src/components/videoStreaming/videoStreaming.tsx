@@ -316,9 +316,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 
 	return (
 		<div
-			className={`flex relative w-full h-full ${
-				stream ? 'bg-light_grey' : 'bg-black'
-			} rounded-sm items-center justify-center`}
+			className="flex relative w-full h-full bg-light_grey rounded-sm items-center justify-center"
 			id={`videos-container${camNumber}`}
 		>
 			{isStream && <Status online={isOnline} />}
@@ -344,7 +342,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 					/>
 				</>
 			) : (
-				<TailSpin color="white" height={50} width={50} />
+				<TailSpin color="#17A5D3" height={50} width={50} />
 			)}
 		</div>
 	);

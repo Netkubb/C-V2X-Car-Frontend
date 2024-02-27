@@ -7,13 +7,12 @@ import {
 	AuthData,
 	CarContext,
 	RSUContext,
-	ReportContext,
 } from '@/components/LayoutWrapper';
+import Map from '@/components/Map';
 import Modal from '@/components/Modal';
 import TextContentBox from '@/components/TextContentBox';
 import VideosSection from '@/components/VideosSection';
 import { IconName } from '@/const/IconName';
-import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
@@ -23,30 +22,15 @@ export default function Home() {
 	const [auth, setAuth] = useContext(AuthContext);
 	const car = useContext(CarContext);
 	const rsu = useContext(RSUContext);
-	const reports = useContext(ReportContext);
 
 	useEffect(() => {
 		if (!auth.token || auth.token === '') router.push('/login');
 	}, [auth]);
 
-	const { isLoaded: isMapReady } = useLoadScript({
-		googleMapsApiKey:
-			process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '<GOOGLE-MAP-KEY>',
-	});
-
 	const [isButtonVisible, setIsButtonVisible] = useState(true);
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [notiMessage, setNotiMessage] = useState<string>('');
 	const [isObjectDetectionOn, setIsObjectDetectionOn] = useState(false);
-
-	const carLocation = {
-		lat: car.latitude,
-		lng: car.longitude,
-	} as google.maps.LatLngLiteral;
-	const rsuLocation = {
-		lat: rsu.latitude,
-		lng: rsu.longitude,
-	} as google.maps.LatLngLiteral;
 
 	const handleConfirmEmergency = () => {
 		setIsButtonVisible(true);
@@ -92,34 +76,9 @@ export default function Home() {
 				content={notiMessage}
 			/>
 			<div className="h-[100dvh] w-[100dvw] flex flex-row gap-12 p-8 bg-light_grey">
-				<div className="h-full w-3/5 bg-white rounded-lg p-16">
-					{/* map */}
-					{isMapReady && (
-						<GoogleMap
-							mapContainerClassName="z-0 h-full w-full rounded-md"
-							zoom={14}
-							center={carLocation}
-							options={{ disableDefaultUI: true }}
-						>
-							<Marker icon={{ url: '/car_pin.svg' }} position={carLocation} />
-							<Marker icon={{ url: '/rsu_pin.svg' }} position={rsuLocation} />
-							{reports.map((report) => {
-								const reportLocation = {
-									lat: report.latitude,
-									lng: report.longitude,
-								} as google.maps.LatLngLiteral;
-
-								return (
-									<Marker
-										icon={{ url: '/rsu_pin.svg' }} // change to report pin
-										position={reportLocation}
-									/>
-								);
-							})}
-						</GoogleMap>
-					)}
+				<div className="h-full w-3/5 bg-white rounded-lg p-16 items-center justify-center">
+					<Map />
 				</div>
-
 				<div className="h-full w-2/5 flex flex-col gap-12">
 					<div className="h-3/5">
 						<VideosSection isObjectDetectionOn={isObjectDetectionOn} />
