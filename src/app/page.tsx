@@ -11,7 +11,7 @@ export default function Home() {
 
 	useEffect(() => {
 		router.push('/login');
-	}, [router]);
+	}, []);
 
 	return (
 		<div className="flex h-[100dvh] w-[100dvw] items-center justify-center">

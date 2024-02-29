@@ -49,20 +49,20 @@ export default function Map() {
 					/>
 				);
 			})}
-			<Marker
+			{ rsuLocation.lat && rsuLocation.lng &&<Marker
 				icon={{
 					url: '/rsu_pin.svg',
 					scaledSize: new google.maps.Size(124, 124),
 				}}
 				position={rsuLocation}
-			/>
-			<Marker
+			/>}
+			{ carLocation.lat && carLocation.lng && <Marker
 				icon={{
 					url: '/car_pin.svg',
 					scaledSize: new google.maps.Size(124, 124),
 				}}
 				position={carLocation}
-			/>
+			/>}
 		</GoogleMap>
 	);
 }

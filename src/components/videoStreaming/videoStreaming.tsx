@@ -20,13 +20,16 @@ const LoadingSpinner: React.FC = () => (
 );
 
 const Video = styled.video`
-  width: 727px;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const BlackWindow = styled.div`
-  width: 640px;
-  height: 480px;
+  width: 100%;
+  height: 100%;
   background-color: black;
   display: flex;
   justify-content: center;
@@ -34,9 +37,10 @@ const BlackWindow = styled.div`
 `;
 
 const VideoContainer = styled.div`
-  position: relative;
+width: 100%;
+  height: 100%;  
+position: relative;
   display: flex;
-  justify-content: space-between;
 `;
 
 const Status = styled.div<{ online: boolean }>`
@@ -288,7 +292,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
   const uploadVideo = async (base64:any) => {
     console.log("uploading to backend...");
     try {
-      fetch("http://localhost:5000/api/video-upload", {
+      fetch("http://161.200.92.6:23426/api/video-upload", {
         method: "POST",
         body: JSON.stringify({ data: base64 }),
         headers: { "Content-Type": "application/json" },
@@ -415,9 +419,9 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
         <a ref={videoDownloadRef}></a>
       </button>
       {isStream ? <Status online={isOnline} />:null}
-      <div>
+      <>
         {stream ? (
-          <>
+          <div className="w-full h-full flex items-center justify-center">
             <Video playsInline muted ref={userVideo} autoPlay />
             <canvas
               id="canvas"
@@ -430,13 +434,13 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
                 display: isShowObjectDetection ? "flex" : "none",
               }}
             />
-          </>
+          </div>
         ) : (
           <BlackWindow>
             <LoadingSpinner />
           </BlackWindow>
         )}
-      </div>
+      </>
     </VideoContainer>
   );
 };

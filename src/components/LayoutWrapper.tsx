@@ -1,7 +1,7 @@
 'use client';
 
 import Script from 'next/script';
-import { Dispatch, SetStateAction, createContext, useState } from 'react';
+import { Dispatch, SetStateAction, createContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 
 export interface AuthData {
@@ -56,18 +56,21 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	const [rsuId, setRsuId] = useState<string>('');
 	const [reports, setReports] = useState<ReportData[]>([]);
 
-	const socket = io(`http://localhost:8002`);
+	useEffect(() => {
+	const socket = io('ws://localhost:8002/' ,{
+		transports: ['websocket' , 'polling'],
+	} );
 	socket.on('connect', () => {
 		console.log('Connect to OBU backend');
 	});
 	socket.on('car info', (message) => {
-		if (message['id'] === auth.car_id)
+		if (message['id'].toString() === auth.car_id.toString()){
 			setCar({
 				speed: message['velocity'],
 				unit: message['unit'],
 				latitude: message['latitude'],
 				longitude: message['longitude'],
-			});
+			});}
 	});
 	socket.on('rsu info', (message) => {
 		setRsuId(message['rsu_id']);
@@ -94,6 +97,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	socket.on('disconnect', () => {
 		console.log('Disconnected from OBU backend');
 	});
+},[auth])
 
 	return (
 		<>
