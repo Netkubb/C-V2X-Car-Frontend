@@ -8,6 +8,7 @@ import { TailSpin } from "react-loader-spinner";
 import RenderBoxes from "./renderBox"
 
 type StreamVideoProps = {
+  isShow: boolean;
   carID: string;
   camNumber: string;
   sourceNumber: number;
@@ -36,11 +37,11 @@ const BlackWindow = styled.div`
   align-items: center;
 `;
 
-const VideoContainer = styled.div`
-width: 100%;
+const VideoContainer = styled.div<{ isShow: boolean }>`
+  width: 100%;
   height: 100%;  
-position: relative;
-  display: flex;
+  position: relative;
+  display: ${(props) => (props.isShow ? "flex" : "none")};
 `;
 
 const Status = styled.div<{ online: boolean }>`
@@ -57,6 +58,7 @@ const Status = styled.div<{ online: boolean }>`
 `;
 
 const StreamVideo: React.FC<StreamVideoProps> = ({
+  isShow,
   carID,
   camNumber,
   sourceNumber,
@@ -239,14 +241,14 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
             setInterval(() => {
               startStreaming();
             }, 60000);
-            mediaRecorder.current.start();
-            console.log("recording ",mediaRecorder.current)
-            setTimeout(stopCamHandler,(timeToSaveinMin-2)*1000)
-            setInterval(() => {
-              mediaRecorder.current.start();
-              console.log("recording ",mediaRecorder.current)
-              setTimeout(stopCamHandler,(timeToSaveinMin-2)*1000)
-            }, timeToSaveinMin*1000);
+            // mediaRecorder.current.start();
+            // console.log("recording ",mediaRecorder.current)
+            // setTimeout(stopCamHandler,(timeToSaveinMin-2)*1000)
+            // setInterval(() => {
+            //   mediaRecorder.current.start();
+            //   console.log("recording ",mediaRecorder.current)
+            //   setTimeout(stopCamHandler,(timeToSaveinMin-2)*1000)
+            // }, timeToSaveinMin*1000);
             
           }
         });
@@ -414,7 +416,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 	// }, [stream, canvasRef.current, userVideo.current]);
 
   return (
-    <VideoContainer id={`videos-container${camNumber}`}>
+    <VideoContainer isShow={isShow} id={`videos-container${camNumber}`}>
       <button className="button" style={{"display":"none"}}>
         <a ref={videoDownloadRef}></a>
       </button>
