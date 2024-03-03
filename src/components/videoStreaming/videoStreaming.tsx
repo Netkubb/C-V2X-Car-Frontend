@@ -14,6 +14,7 @@ type StreamVideoProps = {
   sourceNumber: number;
   isShowObjectDetection: boolean;
   isStream: boolean;
+  isInitDetection:boolean;
 };
 
 const LoadingSpinner: React.FC = () => (
@@ -37,11 +38,18 @@ const BlackWindow = styled.div`
   align-items: center;
 `;
 
-const VideoContainer = styled.div<{ isShow: boolean }>`
+const VideoContainer = styled.div<{ isShow: boolean,  isInitDetection: boolean}>`
   width: 100%;
   height: 100%;  
   position: relative;
-  display: ${(props) => (props.isShow ? "flex" : "none")};
+  ${(props) => (!props.isInitDetection ? `display:flex;visibility :hidden;` : `display:none;`)}
+  ${(props) => (props.isInitDetection ? (props.isShow ? `
+    display: flex !important;
+    visibility :visible;
+    ` : `
+    display: none;
+    visibility :hidden;
+  `):'')}
 `;
 
 const Status = styled.div<{ online: boolean }>`
@@ -64,6 +72,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
   sourceNumber,
   isShowObjectDetection,
   isStream,
+  isInitDetection
 }) => {
   const connection = useRef<RTCMultiConnection>();
   const [stream, setStream] = useState<MediaStream | undefined>();
@@ -150,9 +159,11 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
   //   loadModel();
   // }, []);
 
-  useEffect(() => {
-		if (socket.current && canvasRef.current && connection.current && isShowObjectDetection)
-      socket.current.emit('control center connecting', {
+  useEffect(() => {    
+    // console.log(socket.current , canvasRef.current , connection.current , isShowObjectDetection , isStream);
+    
+		if (socket.current && canvasRef.current && connection.current && isShowObjectDetection && isStream){
+      socket?.current?.emit('control center connecting', {
         roomID: connection.current.sessionid,
       });
 			socket?.current?.on('send object detection', (boxes: Array<any>) => {
@@ -161,6 +172,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 					RenderBoxes({ canvas: canvasRef.current, boxes: boxes });
 				}
 			});
+    }
 	}, [canvasRef.current, socket.current, connection.current, isShowObjectDetection]);
 
   useEffect(() => {
@@ -416,7 +428,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 	// }, [stream, canvasRef.current, userVideo.current]);
 
   return (
-    <VideoContainer isShow={isShow} id={`videos-container${camNumber}`}>
+    <VideoContainer isShow={isShow} isInitDetection={isInitDetection} id={`videos-container${camNumber}`}>
       <button className="button" style={{"display":"none"}}>
         <a ref={videoDownloadRef}></a>
       </button>
