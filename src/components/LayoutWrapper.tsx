@@ -81,7 +81,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 			longitude: message['longitude'],
 		});
 	});
-	socket.on('reports info', (messages) => {
+	socket.on('incident report', (messages) => {
 		const rawReports = (messages as ReportData[])
 			.filter((message) => message['rsu_id'] === rsuId)
 			.map((message) => {
@@ -93,6 +93,9 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 				};
 			});
 		setReports(rawReports);
+	});
+	socket.on('new report notification', (message) => {
+		// do something
 	});
 	socket.on('disconnect', () => {
 		console.log('Disconnected from OBU backend');
