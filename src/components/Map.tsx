@@ -38,31 +38,45 @@ export default function Map() {
 					lat: report.latitude,
 					lng: report.longitude,
 				} as google.maps.LatLngLiteral;
+				const url =
+					report.type === 'CLOSED ROAD'
+						? '/closed_road_pin.svg'
+						: report.type === 'ACCIDENT'
+						? '/accident_pin.svg'
+						: report.type === 'CONSTRUCTION'
+						? '/construction_pin.svg'
+						: report.type === 'TRAFFIC CONGESTION'
+						? '/traffic_jam_pin.svg'
+						: '';
 
 				return (
 					<Marker
 						icon={{
-							url: '/rsu_pin.svg',
+							url: url,
 							scaledSize: new google.maps.Size(124, 124),
-						}} // change to report pin
+						}}
 						position={reportLocation}
 					/>
 				);
 			})}
-			{ rsuLocation.lat && rsuLocation.lng &&<Marker
-				icon={{
-					url: '/rsu_pin.svg',
-					scaledSize: new google.maps.Size(124, 124),
-				}}
-				position={rsuLocation}
-			/>}
-			{ carLocation.lat && carLocation.lng && <Marker
-				icon={{
-					url: '/car_pin.svg',
-					scaledSize: new google.maps.Size(124, 124),
-				}}
-				position={carLocation}
-			/>}
+			{rsuLocation.lat && rsuLocation.lng && (
+				<Marker
+					icon={{
+						url: '/rsu_pin.svg',
+						scaledSize: new google.maps.Size(124, 124),
+					}}
+					position={rsuLocation}
+				/>
+			)}
+			{carLocation.lat && carLocation.lng && (
+				<Marker
+					icon={{
+						url: '/car_pin.svg',
+						scaledSize: new google.maps.Size(124, 124),
+					}}
+					position={carLocation}
+				/>
+			)}
 		</GoogleMap>
 	);
 }
