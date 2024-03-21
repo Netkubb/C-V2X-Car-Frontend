@@ -50,6 +50,20 @@ export default function Home() {
 				latitude: car.latitude,
 				longitude: car.longitude,
 			});
+			socket.on('new report notification', (message) => {
+				const reportNotiMessage =
+					message.type === 'CLOSED ROAD'
+						? 'Road closed report received .'
+						: message.type === 'ACCIDENT'
+						? 'Car accident report received .'
+						: message.type === 'CONSTRUCTION'
+						? 'Construction report received .'
+						: message.type === 'TRAFFIC CONGESTION'
+						? 'Traffic jam report received .'
+						: '';
+
+				if (notiMessage !== '') setNotiMessage(reportNotiMessage);
+			});
 			setNotiMessage('An emergency has been sent!');
 		}
 		const audio = new Audio('/noti.mp3');
