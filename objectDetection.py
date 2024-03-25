@@ -11,10 +11,10 @@ print(f'Using device: {device}')
 sio = socketio.Client()
 
 # Set the Socket.IO server URL
-cam_url = "http://161.200.92.6:23426/"
-server_url = "http://161.200.92.6:25000/"
-# cam_url = "http://localhost:3426/"
-# server_url = "http://localhost:5000/"
+# cam_url = "http://161.200.92.6:23426/"
+# server_url = "http://161.200.92.6:25000/"
+cam_url = "http://localhost:3426/"
+server_url = "http://localhost:5000/"
 
 
 carID = "65ac9720191a85b6842de0ec"
@@ -93,13 +93,13 @@ def thread_callback(roomID, camSource):
 
 
 
-# camSource = int(input("Enter source number: "))
-# camID = cameras[camSource]["id"]
+# camSource = 4
+# camID = cameras[camSource-2]["id"]
 # # Define the roomID (replace with the actual roomID)
 # roomID = f"Room{carID}{camID}"
-# thread_callback(roomID,camSource+2)
+# thread_callback(roomID,camSource)
 
-camSource = 1
+camSource = 2
 # thr = threading.Thread(target=thread_callback, args=[camSource,camSource+2])
 # thr.start()
 for camera in cameras:

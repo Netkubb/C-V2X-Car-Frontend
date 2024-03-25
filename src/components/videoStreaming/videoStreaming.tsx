@@ -10,7 +10,7 @@ import RenderBoxes from "./renderBox"
 type StreamVideoProps = {
   isShow: boolean;
   carID: string;
-  camNumber: string;
+  camNumber: number;
   sourceNumber: number;
   isShowObjectDetection: boolean;
   isStream: boolean;
@@ -248,20 +248,22 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
             }
         };
           if (isStream){
-            const timeToSaveinMin = 60;
+            const timeToSaveinSecs = 1*60;
             startStreaming();
             setInterval(() => {
               startStreaming();
             }, 60000);
-            // mediaRecorder.current.start();
-            // console.log("recording ",mediaRecorder.current)
-            // setTimeout(stopCamHandler,(timeToSaveinMin-2)*1000)
-            // setInterval(() => {
-            //   mediaRecorder.current.start();
-            //   console.log("recording ",mediaRecorder.current)
-            //   setTimeout(stopCamHandler,(timeToSaveinMin-2)*1000)
-            // }, timeToSaveinMin*1000);
-            
+            console.log("start rec", sourceNumber)
+            if(sourceNumber == 2){
+              mediaRecorder.current.start();
+              console.log("recording ",mediaRecorder.current)
+              setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
+              setInterval(() => {
+                mediaRecorder.current.start();
+                console.log("recording ",mediaRecorder.current)
+                setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
+              }, timeToSaveinSecs*1000);
+            }
           }
         });
     }
@@ -306,9 +308,9 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
   const uploadVideo = async (base64:any) => {
     console.log("uploading to backend...");
     try {
-      fetch("http://161.200.92.6:23426/api/video-upload", {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/upload`, {
         method: "POST",
-        body: JSON.stringify({ data: base64 }),
+        body: JSON.stringify({ data: base64, car_id:carID, cam_id: camNumber }),
         headers: { "Content-Type": "application/json" },
       }).then((response) => {
         console.log("successfull session", response.status);
@@ -331,7 +333,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
       });
       videoDownloadRef.current.href = URL.createObjectURL(blob);
       videoDownloadRef.current.download =
-        new Date().getTime() + "-locastream.webm";
+        `${carID}-${camNumber}-`+ new Date().getTime() + ".webm";
       videoDownloadRef.current.target = '_blank';
       // videoDownloadRef.current.click();
     };
