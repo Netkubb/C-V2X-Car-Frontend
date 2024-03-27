@@ -22,6 +22,7 @@ export default function Home() {
 	const [auth, setAuth] = useContext(AuthContext);
 	const car = useContext(CarContext);
 	const rsu = useContext(RSUContext);
+	const socket = io(`http://localhost:8002`);
 
 	useEffect(() => {
 		if (!auth.token || auth.token === '') router.push('/login');
@@ -31,6 +32,26 @@ export default function Home() {
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [notiMessage, setNotiMessage] = useState<string>('');
 	const [isObjectDetectionOn, setIsObjectDetectionOn] = useState(false);
+
+	socket.on('new report notification', (message) => {
+		const reportNotiMessage =
+			message.type === 'CLOSED ROAD'
+				? 'Road closed report received .'
+				: message.type === 'ACCIDENT'
+				? 'Car accident report received .'
+				: message.type === 'CONSTRUCTION'
+				? 'Construction report received .'
+				: message.type === 'TRAFFIC CONGESTION'
+				? 'Traffic jam report received .'
+				: '';
+
+		if (notiMessage !== '') {
+			setNotiMessage(reportNotiMessage);
+			const audio = new Audio('/noti.mp3');
+			audio.play();
+			setIsPopupVisible(true);
+		}
+	});
 
 	const handleConfirmEmergency = () => {
 		setIsButtonVisible(true);
@@ -43,26 +64,11 @@ export default function Home() {
 				'Sent emergency failed: latitude or longitude is undefined!'
 			);
 		} else {
-			const socket = io(`http://localhost:8002`);
 			socket.emit('emergency', {
 				token: auth.token,
 				car_id: auth.car_id,
 				latitude: car.latitude,
 				longitude: car.longitude,
-			});
-			socket.on('new report notification', (message) => {
-				const reportNotiMessage =
-					message.type === 'CLOSED ROAD'
-						? 'Road closed report received .'
-						: message.type === 'ACCIDENT'
-						? 'Car accident report received .'
-						: message.type === 'CONSTRUCTION'
-						? 'Construction report received .'
-						: message.type === 'TRAFFIC CONGESTION'
-						? 'Traffic jam report received .'
-						: '';
-
-				if (notiMessage !== '') setNotiMessage(reportNotiMessage);
 			});
 			setNotiMessage('An emergency has been sent!');
 		}
