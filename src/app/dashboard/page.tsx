@@ -32,29 +32,6 @@ export default function Home() {
 	const [notiMessage, setNotiMessage] = useState<string>('');
 	const [isObjectDetectionOn, setIsObjectDetectionOn] = useState(false);
 
-	useEffect(() => {
-		const socket = io(`http://localhost:8002`);
-		socket.on('new report notification', (message) => {
-			const reportNotiMessage =
-				message.type === 'CLOSED ROAD'
-					? 'Road closed report received .'
-					: message.type === 'ACCIDENT'
-					? 'Car accident report received .'
-					: message.type === 'CONSTRUCTION'
-					? 'Construction report received .'
-					: message.type === 'TRAFFIC CONGESTION'
-					? 'Traffic jam report received .'
-					: '';
-
-			if (notiMessage !== '') {
-				setNotiMessage(reportNotiMessage);
-				const audio = new Audio('/noti.mp3');
-				audio.play();
-				setIsPopupVisible(true);
-			}
-		});
-	}, []);
-
 	const handleConfirmEmergency = () => {
 		setIsButtonVisible(true);
 

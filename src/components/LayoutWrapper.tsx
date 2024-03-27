@@ -9,6 +9,7 @@ import {
 	useState,
 } from 'react';
 import { io } from 'socket.io-client';
+import Modal from './Modal';
 
 export interface AuthData {
 	token: string;
@@ -61,6 +62,8 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	});
 	const [rsuId, setRsuId] = useState<string>('');
 	const [reports, setReports] = useState<ReportData[]>([]);
+	const [notiMessage, setNotiMessage] = useState<string>('');
+	const [isPopupVisible, setIsPopupVisible] = useState(false);
 
 	useEffect(() => {
 		const socket = io('ws://localhost:8002/', {
@@ -101,6 +104,25 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 				});
 			setReports(rawReports);
 		});
+		socket.on('new report notification', (message) => {
+			const reportNotiMessage =
+				message.type === 'CLOSED ROAD'
+					? 'Road closed report received .'
+					: message.type === 'ACCIDENT'
+					? 'Car accident report received .'
+					: message.type === 'CONSTRUCTION'
+					? 'Construction report received .'
+					: message.type === 'TRAFFIC CONGESTION'
+					? 'Traffic jam report received .'
+					: '';
+
+			if (notiMessage !== '') {
+				setNotiMessage(reportNotiMessage);
+				const audio = new Audio('/noti.mp3');
+				audio.play();
+				setIsPopupVisible(true);
+			}
+		});
 
 		socket.on('disconnect', () => {
 			console.log('Disconnected from OBU backend');
@@ -125,6 +147,11 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 				<CarContext.Provider value={car}>
 					<RSUContext.Provider value={rsu}>
 						<ReportContext.Provider value={reports}>
+							<Modal
+								isOpen={isPopupVisible}
+								header="Notification"
+								content={notiMessage}
+							/>
 							{props.children}
 						</ReportContext.Provider>
 					</RSUContext.Provider>
