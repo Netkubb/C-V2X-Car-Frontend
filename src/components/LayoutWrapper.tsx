@@ -109,19 +109,19 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 				message.type === 'CLOSED ROAD'
 					? 'Road closed report received .'
 					: message.type === 'ACCIDENT'
-					? 'Car accident report received .'
+					? 'Accident report received .'
 					: message.type === 'CONSTRUCTION'
-					? 'Construction report received .'
+					? 'Roadwork report received .'
 					: message.type === 'TRAFFIC CONGESTION'
-					? 'Traffic jam report received .'
+					? 'Traffic slowdowns report received .'
 					: '';
-
-			if (notiMessage !== '') {
-				setNotiMessage(reportNotiMessage);
-				const audio = new Audio('/noti.mp3');
-				audio.play();
-				setIsPopupVisible(true);
-			}
+			setNotiMessage(reportNotiMessage);
+			const audio = new Audio('/noti.mp3');
+			audio.play();
+			setIsPopupVisible(true);
+			setTimeout(() => {
+				setIsPopupVisible(false);
+			}, 3000);
 		});
 
 		socket.on('disconnect', () => {
