@@ -65,6 +65,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	const [notiMessage, setNotiMessage] = useState<string>('');
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	let timeoutId: NodeJS.Timeout;
+	let isCount = false;
 
 	useEffect(() => {
 		const socket = io('ws://localhost:8002/', {
@@ -104,10 +105,14 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 					};
 				});
 			if (rawReports.length === 0) {
-				timeoutId = setTimeout(() => {
-					setReports([]);
-				}, 1000);
+				if (!isCount) {
+					timeoutId = setTimeout(() => {
+						setReports([]);
+					}, 1000);
+				}
+				isCount = true;
 			} else {
+				isCount = false;
 				clearTimeout(timeoutId);
 				setReports(rawReports);
 			}
