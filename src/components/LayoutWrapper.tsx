@@ -64,6 +64,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	const [reports, setReports] = useState<ReportData[]>([]);
 	const [notiMessage, setNotiMessage] = useState<string>('');
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
+	let timeoutId: NodeJS.Timeout;
 
 	useEffect(() => {
 		const socket = io('ws://localhost:8002/', {
@@ -92,7 +93,6 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 			});
 		});
 		socket.on('incident report', (messages) => {
-			let timeoutId;
 			const rawReports = (messages as ReportData[])
 				.filter((message) => message['rsu_id'] === rsuId)
 				.map((message) => {
@@ -108,10 +108,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 					setReports([]);
 				}, 1000);
 			} else {
-				if (timeoutId !== '') {
-					clearTimeout(timeoutId);
-					timeoutId = '';
-				}
+				clearTimeout(timeoutId);
 				setReports(rawReports);
 			}
 		});
