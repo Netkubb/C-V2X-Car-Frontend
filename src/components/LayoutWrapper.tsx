@@ -92,6 +92,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 			});
 		});
 		socket.on('incident report', (messages) => {
+			let timeoutId;
 			const rawReports = (messages as ReportData[])
 				.filter((message) => message['rsu_id'] === rsuId)
 				.map((message) => {
@@ -102,7 +103,17 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 						longitude: message['longitude'],
 					};
 				});
-			setReports(rawReports);
+			if (rawReports.length === 0) {
+				timeoutId = setTimeout(() => {
+					setReports([]);
+				}, 1000);
+			} else {
+				if (timeoutId !== '') {
+					clearTimeout(timeoutId);
+					timeoutId = '';
+				}
+				setReports(rawReports);
+			}
 		});
 		socket.on('new report notification', (message) => {
 			const reportNotiMessage =
