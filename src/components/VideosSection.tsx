@@ -21,7 +21,7 @@ export default function VideosSection({
 	useEffect(()=>{
 		setTimeout(()=>{
 			setIsInitDetection(true)
-		},3000)
+		},10000)
 	},[])
 	return (
 		<div className="w-full h-full flex flex-col gap-12 items-center p-12 bg-white rounded-md">
