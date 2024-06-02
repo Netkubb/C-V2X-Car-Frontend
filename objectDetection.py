@@ -3,6 +3,7 @@ import socketio
 import requests
 import threading
 import torch
+import os
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f'Using device: {device}')
@@ -11,10 +12,8 @@ print(f'Using device: {device}')
 sio = socketio.Client()
 
 # Set the Socket.IO server URL
-# cam_url = "http://161.200.92.6:23426/"
-# server_url = "http://161.200.92.6:25000/"
-cam_url = "http://localhost:3426/"
-server_url = "http://localhost:5000/"
+cam_url = os.getenv('NEXT_PUBLIC_API_CAM_URI')
+server_url = os.getenv('NEXT_PUBLIC_API_SERVER_URI')
 
 
 carID = "65ac9720191a85b6842de0ec"
