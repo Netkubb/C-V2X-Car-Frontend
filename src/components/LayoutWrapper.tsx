@@ -37,7 +37,7 @@ interface ReportData {
 
 export const AuthContext = createContext<
 	[AuthData, Dispatch<SetStateAction<AuthData>>]
->([{} as AuthData, () => {}]);
+>([{} as AuthData, () => { }]);
 export const CarContext = createContext<CarData>({} as CarData);
 export const RSUContext = createContext<RSUData>({} as RSUData);
 export const ReportContext = createContext<ReportData[]>([]);
@@ -122,12 +122,12 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 				message.type === 'CLOSED ROAD'
 					? 'Road closed report received .'
 					: message.type === 'ACCIDENT'
-					? 'Accident report received .'
-					: message.type === 'CONSTRUCTION'
-					? 'Roadwork report received .'
-					: message.type === 'TRAFFIC CONGESTION'
-					? 'Traffic slowdowns report received .'
-					: '';
+						? 'Accident report received .'
+						: message.type === 'CONSTRUCTION'
+							? 'Roadwork report received .'
+							: message.type === 'TRAFFIC CONGESTION'
+								? 'Traffic slowdowns report received .'
+								: '';
 			setNotiMessage(reportNotiMessage);
 			const audio = new Audio('/noti.mp3');
 			audio.play();
@@ -145,13 +145,23 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	return (
 		<>
 			<Script
+				type='text/javascript'
+				src="/scripts/RTCMultiConnection.min.js"
+				strategy="beforeInteractive"
+			/>
+			<Script
+				type='text/javascript'
+				src="/scripts/socket.io.js"
+				strategy="beforeInteractive"
+			/>
+			{/* <Script
 				src="https://muazkhan.com:9001/dist/RTCMultiConnection.min.js"
 				strategy="beforeInteractive"
 			/>
 			<Script
 				src="https://muazkhan.com:9001/socket.io/socket.io.js"
 				strategy="beforeInteractive"
-			/>
+			/> */}
 			<Script
 				src="https://www.webrtc-experiment.com/RecordRTC.js"
 				strategy="beforeInteractive"

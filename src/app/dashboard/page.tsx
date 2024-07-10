@@ -88,7 +88,7 @@ export default function Home() {
 							<div className="w-2/5">
 								<TextContentBox
 									title="Current Speed"
-									content={car.speed.toFixed(1)}
+									content={car.speed?.toFixed(1)}
 									helperText={car.unit}
 								/>
 							</div>
