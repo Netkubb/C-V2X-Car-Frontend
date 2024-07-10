@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import StreamVideo from './videoStreaming/videoStreaming';
 
-const carID = '65ac9720191a85b6842de0ec';
+const carID = process.env.NEXT_PUBLIC_CAR_ID?.toString() || "";
 const camIDs = [
-	'65940703ce9bc3c043a77615',
-	'65b6ff827c8483c5c4a474a5',
-	'65b6ff927c8483c5c4a474ab',
-	'65b6ff9c7c8483c5c4a474b1',
+	process.env.NEXT_PUBLIC_CAM_FRONT?.toString() || "",
+	process.env.NEXT_PUBLIC_CAM_BACK?.toString() || "",
+	process.env.NEXT_PUBLIC_CAM_LEFT?.toString() || "",
+	process.env.NEXT_PUBLIC_CAM_RIGHT?.toString() || "",
 ];
 
-const camDeviceStartWith = 2
+const camDeviceStartWith = Number(process.env.NEXT_PUBLIC_CAM_START_WITH) || 0
 
 export default function VideosSection({
 	isObjectDetectionOn,
@@ -17,12 +17,12 @@ export default function VideosSection({
 	isObjectDetectionOn: boolean;
 }) {
 	const [selectedCam, setSelectedCam] = useState<string>(camIDs[0]);
-	const [isInitDetection,setIsInitDetection] = useState(false)
-	useEffect(()=>{
-		setTimeout(()=>{
+	const [isInitDetection, setIsInitDetection] = useState(false)
+	useEffect(() => {
+		setTimeout(() => {
 			setIsInitDetection(true)
-		},10000)
-	},[])
+		}, 10000)
+	}, [])
 	return (
 		<div className="w-full h-full flex flex-col gap-12 items-center p-12 bg-white rounded-md">
 			<div className="h-4/5 w-full">
@@ -32,7 +32,7 @@ export default function VideosSection({
 						isShow={(selectedCam == camID)}
 						carID={carID}
 						camNumber={camID}
-						sourceNumber={i+camDeviceStartWith}
+						sourceNumber={i + camDeviceStartWith}
 						isShowObjectDetection={isObjectDetectionOn}
 						isStream={true}
 					/>)
@@ -50,7 +50,7 @@ export default function VideosSection({
 							isShow={true}
 							carID={carID}
 							camNumber={camID}
-							sourceNumber={i+camDeviceStartWith}
+							sourceNumber={i + camDeviceStartWith}
 							isShowObjectDetection={isObjectDetectionOn}
 							isStream={false}
 						/>
