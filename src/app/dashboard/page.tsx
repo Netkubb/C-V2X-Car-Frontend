@@ -43,7 +43,7 @@ export default function Home() {
 				'Sent emergency failed: latitude or longitude is undefined!'
 			);
 		} else {
-			const socket = io(`http://localhost:8002`);
+			const socket = io(`${process.env.NEXT_PUBLIC_RSU_SOCKET_HTTP_URL}`);
 			socket.emit('emergency', {
 				token: auth.token,
 				car_id: auth.car_id,

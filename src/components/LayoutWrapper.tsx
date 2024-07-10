@@ -68,7 +68,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	let isCount = false;
 
 	useEffect(() => {
-		const socket = io('ws://localhost:8002/', {
+		const socket = io(`${process.env.NEXT_PUBLIC_RSU_SOCKET_WS_URL}`, {
 			transports: ['websocket', 'polling'],
 		});
 		socket.on('connect', () => {
