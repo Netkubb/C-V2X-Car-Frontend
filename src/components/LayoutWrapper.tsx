@@ -37,7 +37,7 @@ interface ReportData {
 
 export const AuthContext = createContext<
 	[AuthData, Dispatch<SetStateAction<AuthData>>]
->([{} as AuthData, () => { }]);
+>([{} as AuthData, () => {}]);
 export const CarContext = createContext<CarData>({} as CarData);
 export const RSUContext = createContext<RSUData>({} as RSUData);
 export const ReportContext = createContext<ReportData[]>([]);
@@ -68,14 +68,14 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	let isCount = false;
 
 	useEffect(() => {
-		const socket = io(`${process.env.NEXT_PUBLIC_RSU_SOCKET_WS_URL}`, {
+		const socket = io(`${process.env.NEXT_PUBLIC_OBU_SOCKET_WS_URL}`, {
 			transports: ['websocket', 'polling'],
 		});
 		socket.on('connect', () => {
 			console.log('Connect to OBU backend');
 		});
 		socket.on('car info', (message) => {
-			if (message['id'].toString() === auth.car_id.toString()) {
+			if (message['id']?.toString() === auth.car_id.toString()) {
 				setCar({
 					speed: message['velocity'],
 					unit: message['unit'],
@@ -122,12 +122,12 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 				message.type === 'CLOSED ROAD'
 					? 'Road closed report received .'
 					: message.type === 'ACCIDENT'
-						? 'Accident report received .'
-						: message.type === 'CONSTRUCTION'
-							? 'Roadwork report received .'
-							: message.type === 'TRAFFIC CONGESTION'
-								? 'Traffic slowdowns report received .'
-								: '';
+					? 'Accident report received .'
+					: message.type === 'CONSTRUCTION'
+					? 'Roadwork report received .'
+					: message.type === 'TRAFFIC CONGESTION'
+					? 'Traffic slowdowns report received .'
+					: '';
 			setNotiMessage(reportNotiMessage);
 			const audio = new Audio('/noti.mp3');
 			audio.play();
@@ -145,12 +145,12 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 	return (
 		<>
 			<Script
-				type='text/javascript'
+				type="text/javascript"
 				src="/scripts/RTCMultiConnection.min.js"
 				strategy="beforeInteractive"
 			/>
 			<Script
-				type='text/javascript'
+				type="text/javascript"
 				src="/scripts/socket.io.js"
 				strategy="beforeInteractive"
 			/>
@@ -174,6 +174,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 								isOpen={isPopupVisible}
 								header="Notification"
 								content={notiMessage}
+								remote={false}
 							/>
 							{props.children}
 						</ReportContext.Provider>

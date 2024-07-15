@@ -22,7 +22,11 @@ export default function Home() {
 				password: password,
 			})
 			.then((res) => {
-				setAuth({token : res.data.data.token, role : res.data.data.role, car_id : res.data.data.car_id});
+				setAuth({
+					token: res.data.data.token,
+					role: res.data.data.role,
+					car_id: res.data.data.car_id,
+				});
 				router.push('/dashboard');
 			})
 			.catch(() => setIsError(true));

@@ -31,6 +31,7 @@ export default function Home() {
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
 	const [notiMessage, setNotiMessage] = useState<string>('');
 	const [isObjectDetectionOn, setIsObjectDetectionOn] = useState(false);
+	const [remote, setRemote] = useState(false);
 
 	const handleConfirmEmergency = () => {
 		setIsButtonVisible(true);
@@ -43,7 +44,7 @@ export default function Home() {
 				'Sent emergency failed: latitude or longitude is undefined!'
 			);
 		} else {
-			const socket = io(`${process.env.NEXT_PUBLIC_RSU_SOCKET_HTTP_URL}`);
+			const socket = io(`${process.env.NEXT_PUBLIC_OBU_SOCKET_HTTP_URL}`);
 			socket.emit('emergency', {
 				token: auth.token,
 				car_id: auth.car_id,
@@ -66,6 +67,25 @@ export default function Home() {
 		router.push('/login');
 	};
 
+	useEffect(() => {
+		const socket = io(`${process.env.NEXT_PUBLIC_OBU_SOCKET_HTTP_URL}`);
+		socket.on('emergency_stop', (res) => {
+			setNotiMessage('Emergency stop from control center!');
+			setRemote(true);
+			const audio = new Audio('/noti.mp3');
+			audio.play();
+			setIsPopupVisible(true);
+
+			setTimeout(() => {
+				setIsPopupVisible(false);
+				setRemote(false);
+			}, 5000);
+		});
+		return () => {
+			socket.off('emergency_stop');
+		};
+	}, []);
+
 	if (!auth.token || auth.token === '') return;
 
 	return (
@@ -74,6 +94,7 @@ export default function Home() {
 				isOpen={isPopupVisible}
 				header="Notification"
 				content={notiMessage}
+				remote={remote}
 			/>
 			<div className="h-[100dvh] w-[100dvw] flex flex-row gap-12 p-8 bg-light_grey">
 				<div className="h-full w-3/5 bg-white rounded-lg p-16 items-center justify-center">
@@ -88,7 +109,7 @@ export default function Home() {
 							<div className="w-2/5">
 								<TextContentBox
 									title="Current Speed"
-									content={car.speed?.toFixed(1)}
+									content={car.speed?.toFixed()}
 									helperText={car.unit}
 								/>
 							</div>
