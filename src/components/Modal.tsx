@@ -2,17 +2,23 @@ export default function Modal({
 	isOpen,
 	header,
 	content,
+	remote,
 }: {
 	isOpen: boolean;
 	header: string;
 	content: string;
+	remote: boolean;
 }) {
 	return (
 		<>
 			{isOpen && (
 				<div className="fixed z-10 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
 					<div className="z-20 flex flex-col ">
-						<div className="w-full bg-red px-32 py-8 rounded-t-lg shadow-lg">
+						<div
+							className={`w-full ${
+								remote ? 'bg-orange-500' : 'bg-red'
+							} px-32 py-8 rounded-t-lg shadow-lg`}
+						>
 							<p className="font-istok text-white text-h4 words-break">
 								{header}
 							</p>
