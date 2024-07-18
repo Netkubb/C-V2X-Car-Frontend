@@ -33,7 +33,8 @@ export default function Map() {
 			center={carLocation}
 			options={{ disableDefaultUI: true }}
 		>
-			{reports.map((report) => {
+			{reports.map((report, index) => {
+				
 				const reportLocation = {
 					lat: report.latitude,
 					lng: report.longitude,
@@ -51,6 +52,7 @@ export default function Map() {
 
 				return (
 					<Marker
+						key={report.type.replace(' ', '')+index}
 						icon={{
 							url: url,
 							scaledSize: new google.maps.Size(124, 124),

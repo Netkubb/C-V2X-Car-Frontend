@@ -31,6 +31,7 @@ export default function VideosSection({
 						isInitDetection={isInitDetection}
 						isShow={(selectedCam == camID)}
 						carID={carID}
+						key={"steam_" + camID}
 						camNumber={camID}
 						sourceNumber={i + camDeviceStartWith}
 						isShowObjectDetection={isObjectDetectionOn}
@@ -49,6 +50,7 @@ export default function VideosSection({
 							isInitDetection={true}
 							isShow={true}
 							carID={carID}
+							key={"steam_"+camID}
 							camNumber={camID}
 							sourceNumber={i + camDeviceStartWith}
 							isShowObjectDetection={isObjectDetectionOn}

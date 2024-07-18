@@ -10,7 +10,8 @@ import RenderBoxes from "./renderBox"
 type StreamVideoProps = {
   isShow: boolean;
   carID: string;
-  camNumber: number;
+  camNumber: string;
+  key: string;
   sourceNumber: number;
   isShowObjectDetection: boolean;
   isStream: boolean;
@@ -70,6 +71,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
   carID,
   camNumber,
   sourceNumber,
+  key,
   isShowObjectDetection,
   isStream,
   isInitDetection
@@ -238,15 +240,15 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
           );
 
           connection.current.attachStreams = [video];
-          if(video){
-            mediaRecorder.current = new MediaRecorder(video,  { mimeType: 'video/webm; codecs=vp9' });
-            mediaRecorder.current.ondataavailable = (event:any) => {
-              console.log("data-available");
-              if (event?.data.size > 0) {
-                recordedChunks.current.push(event.data);
-              }
-            }
-        };
+        //   if(video){
+        //     mediaRecorder.current = new MediaRecorder(video,  { mimeType: 'video/webm; codecs=vp9' });
+        //     mediaRecorder.current.ondataavailable = (event:any) => {
+        //       console.log("data-available");
+        //       if (event?.data.size > 0) {
+        //         recordedChunks.current.push(event.data);
+        //       }
+        //     }
+        // };
           if (isStream){
             const timeToSaveinSecs = 10*60;
             startStreaming();
