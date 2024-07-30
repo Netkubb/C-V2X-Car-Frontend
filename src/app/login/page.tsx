@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Image from 'next/image';
@@ -32,6 +32,27 @@ export default function Home() {
 			.catch(() => setIsError(true));
 	};
 
+	const handleDefaultLogin = async () => {
+		await axios
+			.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+				username: process.env.NEXT_PUBLIC_DRIVER_USERNAME,
+				password: process.env.NEXT_PUBLIC_DRIVER_PASSWORD,
+			})
+			.then((res) => {
+				setAuth({
+					token: res.data.data.token,
+					role: res.data.data.role,
+					car_id: res.data.data.car_id,
+				});
+				router.push('/dashboard');
+			})
+			.catch(() => setIsError(true));
+	};
+
+	useEffect(() => {
+		handleDefaultLogin()
+	})
+	
 	return (
 		<div className="flex w-[100dvw] h-[100dvh] items-center justify-center">
 			<Image
