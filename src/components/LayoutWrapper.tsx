@@ -21,6 +21,7 @@ interface CarData {
 	unit: string;
 	latitude: number;
 	longitude: number;
+	driveMode: string;
 }
 interface RSUData {
 	rec_speed: number;
@@ -53,6 +54,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 		unit: 'km/h',
 		latitude: 0.0,
 		longitude: 0.0,
+		driveMode: 'manual',
 	});
 	const [rsu, setRSU] = useState<RSUData>({
 		rec_speed: 0.0,
@@ -81,6 +83,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 					unit: message['unit'],
 					latitude: message['latitude'],
 					longitude: message['longitude'],
+					driveMode: message['mode']
 				});
 			}
 		});
