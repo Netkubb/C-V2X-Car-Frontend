@@ -121,7 +121,7 @@ export default function Home() {
 							<div className="w-2/5">
 								<TextContentBox
 									title="Recommend Speed"
-									content={rsu.rec_speed?.toFixed(1) ?? '-'}
+									content={rsu.rec_speed?.toFixed() ?? '-'}
 									helperText={rsu.unit}
 								/>
 							</div>
