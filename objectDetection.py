@@ -4,6 +4,9 @@ import requests
 import threading
 import torch
 import os
+from dotenv import dotenv_values
+# Load environment variable from .env.local
+config = dotenv_values(".env.local")
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f'Using device: {device}')
@@ -11,12 +14,15 @@ print(f'Using device: {device}')
 # Create Socket.IO client
 sio = socketio.Client()
 
+carID = config.get('NEXT_PUBLIC_CAR_ID')
+cam_front_rtsp = config.get('NEXT_PUBLIC_CAM_FRONT_RTSP')
+cam_back_rtsp = config.get('NEXT_PUBLIC_CAM_BACK_RTSP')
+cam_left_rtsp = config.get('NEXT_PUBLIC_CAM_LEFT_RTSP')
+cam_right_rtsp = config.get('NEXT_PUBLIC_CAM_RIGHT_RTSP')
+
 # Set the Socket.IO server URL
-cam_url = os.getenv('NEXT_PUBLIC_API_CAM_URI')
-server_url = os.getenv('NEXT_PUBLIC_API_SERVER_URI')
-
-
-carID = "65ac9720191a85b6842de0ec"
+cam_url = config.get('NEXT_PUBLIC_API_CAM_URI')
+server_url = config.get('NEXT_PUBLIC_API_SERVER_URI')
 
 
 response = requests.get(f"{server_url}api/cars/{carID}")
@@ -98,15 +104,23 @@ def thread_callback(roomID, camSource):
 # roomID = f"Room{carID}{camID}"
 # thread_callback(roomID,camSource)
 
-camSource = 2
+# camSource = 2
+rtsp_sources = [
+    cam_front_rtsp,
+    cam_back_rtsp,
+    cam_left_rtsp,
+    cam_right_rtsp
+]
 # thr = threading.Thread(target=thread_callback, args=[camSource,camSource+2])
 # thr.start()
-for camera in cameras:
+
+for (i, camera) in enumerate(cameras):
     camID = camera["id"]
+    rtsp_source = rtsp_sources[i]
     # Define the roomID (replace with the actual roomID)
     roomID = f"Room{carID}{camID}"
-    thr = threading.Thread(target=thread_callback, args=[roomID,camSource])
+    thr = threading.Thread(target=thread_callback, args=[roomID,rtsp_source])
     thr.start()
-    camSource+=1
+    # camSource+=1
 
 sio.wait()
