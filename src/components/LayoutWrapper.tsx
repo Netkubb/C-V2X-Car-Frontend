@@ -164,11 +164,11 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 			<Script
 				src="https://muazkhan.com:9001/socket.io/socket.io.js"
 				strategy="beforeInteractive"
-			/> */}
+			/> 
 			<Script
 				src="https://www.webrtc-experiment.com/RecordRTC.js"
 				strategy="beforeInteractive"
-			/>
+			/> */}
 			<AuthContext.Provider value={[auth, setAuth]}>
 				<CarContext.Provider value={car}>
 					<RSUContext.Provider value={rsu}>

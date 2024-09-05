@@ -275,16 +275,16 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
               startStreaming();
             }, 60000);
             console.log("start rec", sourceNumber)
-            if(sourceNumber == 2){
-              mediaRecorder.current.start();
-              console.log("recording ",mediaRecorder.current)
-              setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
-              setInterval(() => {
-                mediaRecorder.current.start();
-                console.log("recording ",mediaRecorder.current)
-                setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
-              }, timeToSaveinSecs*1000);
-            }
+            // if(sourceNumber == 2){
+              // mediaRecorder.current.start();
+              // console.log("recording ",mediaRecorder.current)
+              // setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
+              // setInterval(() => {
+                // mediaRecorder.current.start();
+                // console.log("recording ",mediaRecorder.current)
+                // setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
+              // }, timeToSaveinSecs*1000);
+            // }
           }
         });
     }
