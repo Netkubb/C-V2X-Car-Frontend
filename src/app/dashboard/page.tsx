@@ -120,7 +120,7 @@ export default function Home() {
 						<div className="h-full w-full flex flex-row gap-12">
 							<div className="w-2/5">
 								<TextContentBox
-									title="Recommend Speed"
+									title="Recommended Speed"
 									content={rsu.rec_speed?.toFixed() ?? '-'}
 									helperText={rsu.unit}
 								/>
