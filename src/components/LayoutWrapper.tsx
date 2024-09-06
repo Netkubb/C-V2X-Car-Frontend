@@ -38,7 +38,7 @@ interface ReportData {
 
 export const AuthContext = createContext<
 	[AuthData, Dispatch<SetStateAction<AuthData>>]
->([{} as AuthData, () => {}]);
+>([{} as AuthData, () => { }]);
 export const CarContext = createContext<CarData>({} as CarData);
 export const RSUContext = createContext<RSUData>({} as RSUData);
 export const ReportContext = createContext<ReportData[]>([]);
@@ -131,6 +131,14 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 					: message.type === 'TRAFFIC CONGESTION'
 					? 'Traffic slowdowns report received .'
 					: '';
+
+			setReports([{
+				type: message['type'],
+				rsu_id: message['rsu_id'],
+				latitude: message['latitude'],
+				longitude: message['longitude'],
+			}]);
+
 			setNotiMessage(reportNotiMessage);
 			const audio = new Audio('/noti.mp3');
 			audio.play();
