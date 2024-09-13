@@ -109,8 +109,9 @@ export default function Home() {
 							<div className="w-2/5">
 								<TextContentBox
 									title="Current Speed"
-									content={car.speed?.toFixed() ?? '0'}
+									content={car.speed?.toFixed() ?? '-'}
 									helperText={car.unit}
+									warning={(car.speed >= rsu.rec_speed)}
 								/>
 							</div>
 							<div className="w-3/5">
