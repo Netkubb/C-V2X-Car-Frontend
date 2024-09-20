@@ -81,40 +81,55 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 				setCar({
 					speed: message['velocity'],
 					unit: message['unit'],
-					latitude: message['latitude'],
-					longitude: message['longitude'],
+					latitude: Number(message['latitude']),
+					longitude: Number(message['longitude']),
 					driveMode: message['mode']
 				});
 			}
 		});
 		socket.on('rsu info', (message) => {
-			setRsuId(message['rsu_id']);
+			// console.log("rsu info", message);
+			if (message['rsu_id']){
+				// console.log("Resetting the RSUID", message['rsu_id'])
+				setRsuId(message['rsu_id']);
+			// }else{
+			// 	console.log("RSUID = " + rsuId);
+			}
 			setRSU({
 				rec_speed: message['recommend_speed'],
 				unit: message['unit'],
-				latitude: message['latitude'],
-				longitude: message['longitude'],
+				latitude: Number(message['latitude']),
+				longitude: Number(message['longitude']),
 			});
 		});
 		socket.on('incident report', (messages) => {
+			// console.log("incident report", messages);
+			// console.log("rsu id", rsuId);
+			
 			const rawReports = (messages as ReportData[])
 				.filter((message) => message['rsu_id'] === rsuId)
 				.map((message) => {
 					return {
 						type: message['type'],
 						rsu_id: message['rsu_id'],
-						latitude: message['latitude'],
-						longitude: message['longitude'],
+						latitude: Number(message['latitude']),
+						longitude: Number(message['longitude']),
 					};
 				});
 			if (rawReports.length === 0) {
+				// console.log("empty rawReports");
+				
 				if (!isCount) {
 					timeoutId = setTimeout(() => {
-						setReports([]);
+						if (rsuId) {
+							setReports([]);
+						}
 					}, 1000);
 				}
 				isCount = true;
 			} else {
+				// console.log("not empty rawReports");
+
 				isCount = false;
 				clearTimeout(timeoutId);
 				setReports(rawReports);
@@ -135,8 +150,8 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 			setReports([{
 				type: message['type'],
 				rsu_id: message['rsu_id'],
-				latitude: message['latitude'],
-				longitude: message['longitude'],
+				latitude: Number(message['latitude']),
+				longitude: Number(message['longitude']),
 			}]);
 
 			setNotiMessage(reportNotiMessage);
@@ -151,7 +166,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 		socket.on('disconnect', () => {
 			console.log('Disconnected from OBU backend');
 		});
-	}, [auth]);
+	}, [auth, rsuId]);
 
 	return (
 		<>

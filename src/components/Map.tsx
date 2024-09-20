@@ -29,7 +29,7 @@ export default function Map() {
 	return (
 		<GoogleMap
 			mapContainerClassName="z-0 h-full w-full rounded-md"
-			zoom={14}
+			zoom={18}
 			center={carLocation}
 			options={{ disableDefaultUI: true }}
 		>
