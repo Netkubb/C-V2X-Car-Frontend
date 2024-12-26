@@ -28,6 +28,7 @@ interface RSUData {
 	unit: string;
 	latitude: number;
 	longitude: number;
+	lane_changing: number;
 }
 interface ReportData {
 	type: 'ACCIDENT' | 'CLOSED ROAD' | 'CONSTRUCTION' | 'TRAFFIC CONGESTION';
@@ -38,7 +39,7 @@ interface ReportData {
 
 export const AuthContext = createContext<
 	[AuthData, Dispatch<SetStateAction<AuthData>>]
->([{} as AuthData, () => { }]);
+>([{} as AuthData, () => {}]);
 export const CarContext = createContext<CarData>({} as CarData);
 export const RSUContext = createContext<RSUData>({} as RSUData);
 export const ReportContext = createContext<ReportData[]>([]);
@@ -61,6 +62,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 		unit: 'km/h',
 		latitude: 0.0,
 		longitude: 0.0,
+		lane_changing: 1,
 	});
 	const [rsuId, setRsuId] = useState<string>('');
 	const [reports, setReports] = useState<ReportData[]>([]);
@@ -83,29 +85,30 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 					unit: message['unit'],
 					latitude: Number(message['latitude']),
 					longitude: Number(message['longitude']),
-					driveMode: message['mode']
+					driveMode: message['mode'],
 				});
 			}
 		});
 		socket.on('rsu info', (message) => {
-			// console.log("rsu info", message);
-			if (message['rsu_id']){
+			console.log('rsu info', message);
+			if (message['rsu_id']) {
 				// console.log("Resetting the RSUID", message['rsu_id'])
 				setRsuId(message['rsu_id']);
-			// }else{
-			// 	console.log("RSUID = " + rsuId);
+				// }else{
+				// 	console.log("RSUID = " + rsuId);
 			}
 			setRSU({
 				rec_speed: message['recommend_speed'],
 				unit: message['unit'],
 				latitude: Number(message['latitude']),
 				longitude: Number(message['longitude']),
+				lane_changing: message['lane_changing'],
 			});
 		});
 		socket.on('incident report', (messages) => {
 			// console.log("incident report", messages);
 			// console.log("rsu id", rsuId);
-			
+
 			const rawReports = (messages as ReportData[])
 				.filter((message) => message['rsu_id'] === rsuId)
 				.map((message) => {
@@ -118,7 +121,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 				});
 			if (rawReports.length === 0) {
 				// console.log("empty rawReports");
-				
+
 				if (!isCount) {
 					timeoutId = setTimeout(() => {
 						if (rsuId) {
@@ -147,12 +150,14 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 					? 'Traffic slowdowns report received .'
 					: '';
 
-			setReports([{
-				type: message['type'],
-				rsu_id: message['rsu_id'],
-				latitude: Number(message['latitude']),
-				longitude: Number(message['longitude']),
-			}]);
+			setReports([
+				{
+					type: message['type'],
+					rsu_id: message['rsu_id'],
+					latitude: Number(message['latitude']),
+					longitude: Number(message['longitude']),
+				},
+			]);
 
 			setNotiMessage(reportNotiMessage);
 			const audio = new Audio('/noti.mp3');

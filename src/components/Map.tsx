@@ -14,7 +14,7 @@ export default function Map() {
 	const car = useContext(CarContext);
 	const rsu = useContext(RSUContext);
 	const reports = useContext(ReportContext);
-	
+
 	const carLocation = {
 		lat: car.latitude,
 		lng: car.longitude,
@@ -34,7 +34,6 @@ export default function Map() {
 			options={{ disableDefaultUI: true }}
 		>
 			{reports.map((report, index) => {
-				
 				const reportLocation = {
 					lat: report.latitude,
 					lng: report.longitude,
@@ -52,7 +51,7 @@ export default function Map() {
 
 				return (
 					<Marker
-						key={report.type.replace(' ', '')+index}
+						key={report.type.replace(' ', '') + index}
 						icon={{
 							url: url,
 							scaledSize: new google.maps.Size(124, 124),
@@ -73,7 +72,9 @@ export default function Map() {
 			{carLocation.lat && carLocation.lng && (
 				<Marker
 					icon={{
-						url: '/car_pin' + `${car.driveMode == 'autonomous'?'_av.svg':'.svg'}`,
+						url:
+							'/car_pin' +
+							`${car.driveMode == 'autonomous' ? '_av.svg' : '.svg'}`,
 						scaledSize: new google.maps.Size(124, 124),
 					}}
 					position={carLocation}

@@ -16,6 +16,7 @@ import { IconName } from '@/const/IconName';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+import LaneChanging from '@/components/LaneChanging';
 
 export default function Home() {
 	const router = useRouter();
@@ -101,8 +102,11 @@ export default function Home() {
 					<Map />
 				</div>
 				<div className="h-full w-2/5 flex flex-col gap-12">
-					<div className="h-3/5">
+					<div className="h-[48%]">
 						<VideosSection isObjectDetectionOn={isObjectDetectionOn} />
+					</div>
+					<div className="h-[12%]">
+						<LaneChanging />
 					</div>
 					<div className="h-2/5 w-full flex flex-col gap-12">
 						<div className="h-full w-full flex flex-row gap-12">
@@ -111,7 +115,7 @@ export default function Home() {
 									title="Current Speed"
 									content={car.speed?.toFixed() ?? '-'}
 									helperText={car.unit}
-									warning={(car.speed >= rsu.rec_speed)}
+									warning={car.speed >= rsu.rec_speed}
 								/>
 							</div>
 							<div className="w-3/5">
