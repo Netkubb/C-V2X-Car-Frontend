@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import StreamVideo from './videoStreaming/videoStreaming';
+import NewVideoStream from './videoStreaming/newVideoStream';
 const carID = process.env.NEXT_PUBLIC_CAR_ID?.toString() || '';
 const camIDs = [
 	process.env.NEXT_PUBLIC_CAM_FRONT?.toString() || '',
@@ -24,7 +25,7 @@ export default function VideosSection({
 	}, []);
 	return (
 		<div className="w-full h-full flex flex-col gap-12 items-center p-12 bg-white rounded-md">
-			{camIDs.map((camID, i) => (
+			{/* {camIDs.map((camID, i) => (
 				<StreamVideo
 					isInitDetection={isInitDetection}
 					isShow={selectedCam == camID}
@@ -35,7 +36,8 @@ export default function VideosSection({
 					isShowObjectDetection={isObjectDetectionOn}
 					isStream={true}
 				/>
-			))}
+			))} */}
+			<NewVideoStream stream_server="http://localhost:8083" suuid="my_suuid" />
 		</div>
 	);
 }

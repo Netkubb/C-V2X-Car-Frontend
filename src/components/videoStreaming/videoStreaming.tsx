@@ -6,29 +6,22 @@ import styled from 'styled-components';
 // import MRecordRTC from "recordrtc";
 import { TailSpin } from 'react-loader-spinner';
 import RenderBoxes from './renderBox';
+import NewVideoStream from './newVideoStream';
 
 type StreamVideoProps = {
-  isShow: boolean;
-  carID: string;
-  camNumber: string;
-  key: string;
-  sourceNumber: number;
-  isShowObjectDetection: boolean;
-  isStream: boolean;
-  isInitDetection:boolean;
+	isShow: boolean;
+	carID: string;
+	camNumber: string;
+	key: string;
+	sourceNumber: number;
+	isShowObjectDetection: boolean;
+	isStream: boolean;
+	isInitDetection: boolean;
 };
 
 const LoadingSpinner: React.FC = () => (
 	<TailSpin color="white" height={50} width={50} />
 );
-
-const Video = styled.video`
-	width: 100%;
-	height: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-`;
 
 const BlackWindow = styled.div`
 	width: 100%;
@@ -78,14 +71,14 @@ const Status = styled.div<{ online: boolean }>`
 `;
 
 const StreamVideo: React.FC<StreamVideoProps> = ({
-  isShow,
-  carID,
-  camNumber,
-  sourceNumber,
-  key,
-  isShowObjectDetection,
-  isStream,
-  isInitDetection
+	isShow,
+	carID,
+	camNumber,
+	sourceNumber,
+	key,
+	isShowObjectDetection,
+	isStream,
+	isInitDetection,
 }) => {
 	const connection = useRef<RTCMultiConnection>();
 	const [stream, setStream] = useState<MediaStream | undefined>();
@@ -258,37 +251,37 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 						`videos-container${camNumber}`
 					);
 
-          connection.current.attachStreams = [video];
-        //   if(video){
-        //     mediaRecorder.current = new MediaRecorder(video,  { mimeType: 'video/webm; codecs=vp9' });
-        //     mediaRecorder.current.ondataavailable = (event:any) => {
-        //       console.log("data-available");
-        //       if (event?.data.size > 0) {
-        //         recordedChunks.current.push(event.data);
-        //       }
-        //     }
-        // };
-          if (isStream){
-            const timeToSaveinSecs = 10*60;
-            startStreaming();
-            setInterval(() => {
-              startStreaming();
-            }, 60000);
-            console.log("start rec", sourceNumber)
-            // if(sourceNumber == 2){
-              // mediaRecorder.current.start();
-              // console.log("recording ",mediaRecorder.current)
-              // setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
-              // setInterval(() => {
-                // mediaRecorder.current.start();
-                // console.log("recording ",mediaRecorder.current)
-                // setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
-              // }, timeToSaveinSecs*1000);
-            // }
-          }
-        });
-    }
-  }, []);
+					connection.current.attachStreams = [video];
+					//   if(video){
+					//     mediaRecorder.current = new MediaRecorder(video,  { mimeType: 'video/webm; codecs=vp9' });
+					//     mediaRecorder.current.ondataavailable = (event:any) => {
+					//       console.log("data-available");
+					//       if (event?.data.size > 0) {
+					//         recordedChunks.current.push(event.data);
+					//       }
+					//     }
+					// };
+					if (isStream) {
+						const timeToSaveinSecs = 10 * 60;
+						startStreaming();
+						setInterval(() => {
+							startStreaming();
+						}, 60000);
+						console.log('start rec', sourceNumber);
+						// if(sourceNumber == 2){
+						// mediaRecorder.current.start();
+						// console.log("recording ",mediaRecorder.current)
+						// setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
+						// setInterval(() => {
+						// mediaRecorder.current.start();
+						// console.log("recording ",mediaRecorder.current)
+						// setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
+						// }, timeToSaveinSecs*1000);
+						// }
+					}
+				});
+		}
+	}, []);
 
 	const startStreaming = () => {
 		connection.current.sdpConstraints.mandatory = {
@@ -475,7 +468,10 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 			<>
 				{stream ? (
 					<div className="w-full h-full flex items-center justify-center">
-						<Video playsInline muted ref={userVideo} autoPlay />
+						<NewVideoStream
+							stream_server="http://localhost:8083"
+							suuid="my_suuid"
+						/>
 						<canvas
 							id="canvas"
 							ref={canvasRef}

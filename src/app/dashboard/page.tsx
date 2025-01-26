@@ -26,7 +26,7 @@ export default function Home() {
 
 	useEffect(() => {
 		if (!auth.token || auth.token === '') router.push('/login');
-	}, [auth]);
+	}, [auth, router]);
 
 	const [isButtonVisible, setIsButtonVisible] = useState(true);
 	const [isPopupVisible, setIsPopupVisible] = useState(false);
