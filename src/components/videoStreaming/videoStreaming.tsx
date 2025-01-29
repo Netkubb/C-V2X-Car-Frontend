@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import RTCMultiConnection from 'rtcmulticonnection';
 import { io, Socket } from 'socket.io-client';
 import styled from 'styled-components';
-// import MRecordRTC from "recordrtc";
 import { TailSpin } from 'react-loader-spinner';
 import RenderBoxes from './renderBox';
 import NewVideoStream from './newVideoStream';
@@ -85,21 +84,12 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 	const socket = useRef<Socket>();
 	const userVideo = useRef<HTMLVideoElement>(null);
 	const [isOnline, setIsOnline] = useState<boolean>(false);
-	// const recorder = useRef<MRecordRTC>();
 	const isOnlineRef = useRef<boolean>(false);
-	const session = useRef<any>(); // Adjust the type according to your needs
-	// const modelName = "yolov8n.onnx";
-	// const modelInputShape: number[] = [1, 3, 640, 640];
-	// const topk: number = 100;
-	// const iouThreshold: number = 0.45;
-	// const scoreThreshold: number = 0.65;
-	const isDetect = useRef<boolean>(false);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [roomID, setRoomID] = useState<string | null>(null);
 	let mediaRecorder: any = useRef();
 	let recordedChunks: any = useRef([]);
 	const videoDownloadRef: any = useRef();
-	let videoUrl = null;
 
 	useEffect(() => {
 		const initUserVideo = async () => {
@@ -144,30 +134,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 		return navigator.mediaDevices.getUserMedia(constraints);
 	};
 
-	// useEffect(() => {
-	//   // Load YOLOv8 model when the component mounts
-	//   const loadModel = async () => {
-	//     const baseModelURL = `${process.env.PUBLIC_URL}/model`;
-
-	//     const arrBufNet = await fetch(`${baseModelURL}/${modelName}`).then(
-	//       (response) => response.arrayBuffer()
-	//     );
-	//     const yolov8 = await InferenceSession.create(arrBufNet);
-
-	//     const arrBufNMS = await fetch(`${baseModelURL}/nms-yolov8.onnx`).then(
-	//       (response) => response.arrayBuffer()
-	//     );
-	//     const nms = await InferenceSession.create(arrBufNMS);
-
-	//     session.current = { net: yolov8, nms };
-	//   };
-
-	//   loadModel();
-	// }, []);
-
 	useEffect(() => {
-		// console.log(socket.current , canvasRef.current , connection.current , isShowObjectDetection , isStream);
-
 		if (
 			socket.current &&
 			canvasRef.current &&
@@ -179,7 +146,6 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 				roomID: connection.current.sessionid,
 			});
 			socket?.current?.on('send object detection', (boxes: Array<any>) => {
-				// console.log(boxes)
 				if (canvasRef.current) {
 					RenderBoxes({ canvas: canvasRef.current, boxes: boxes });
 				}
@@ -191,24 +157,6 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 		connection.current,
 		isShowObjectDetection,
 	]);
-
-	useEffect(() => {
-		// Start streaming and object detection when the webcam stream is available
-		if (stream && userVideo.current && session.current) {
-			// detectVideo(
-			//   userVideo.current,
-			//   canvasRef.current,
-			//   session.current,
-			//   topk,
-			//   iouThreshold,
-			//   scoreThreshold,
-			//   modelInputShape,
-			//   socket.current,
-			//   roomID
-			// );
-			// startRecording(stream);
-		}
-	}, [stream, session.current]);
 
 	useEffect(() => {
 		if (!connection.current) {
@@ -252,32 +200,12 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 					);
 
 					connection.current.attachStreams = [video];
-					//   if(video){
-					//     mediaRecorder.current = new MediaRecorder(video,  { mimeType: 'video/webm; codecs=vp9' });
-					//     mediaRecorder.current.ondataavailable = (event:any) => {
-					//       console.log("data-available");
-					//       if (event?.data.size > 0) {
-					//         recordedChunks.current.push(event.data);
-					//       }
-					//     }
-					// };
 					if (isStream) {
-						const timeToSaveinSecs = 10 * 60;
 						startStreaming();
 						setInterval(() => {
 							startStreaming();
 						}, 60000);
 						console.log('start rec', sourceNumber);
-						// if(sourceNumber == 2){
-						// mediaRecorder.current.start();
-						// console.log("recording ",mediaRecorder.current)
-						// setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
-						// setInterval(() => {
-						// mediaRecorder.current.start();
-						// console.log("recording ",mediaRecorder.current)
-						// setTimeout(stopCamHandler,(timeToSaveinSecs-2)*1000)
-						// }, timeToSaveinSecs*1000);
-						// }
 					}
 				});
 		}
@@ -368,57 +296,6 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 		mediaRecorder.current.stop();
 	};
 
-	// const startRecording = (stream: MediaStream) => {
-	//   if (stream) {
-	//     recorder.current = new MRecordRTC(stream, {
-	//       type: "video",
-	//       mimeType: "video/webm",
-	//     });
-
-	//     recorder.current.startRecording();
-	//   } else {
-	//     console.error("Cannot start recording, stream is undefined");
-	//   }
-	// };
-	// const stopRecording = () => {
-	//   if (recorder.current) {
-	//     recorder.current.stopRecording(function () {
-	//       const videoBlob = recorder.current?.getBlob();
-	//       if (videoBlob){
-	//         const videoUrl = URL.createObjectURL(videoBlob);
-
-	//         const videoElement = document.getElementById("saveVDO");
-
-	//         if (videoElement instanceof HTMLVideoElement) {
-	//           videoElement.src = videoUrl;
-	//           videoElement.play();
-	//         } else {
-	//           console.error("Video element not found in the DOM");
-	//         }
-	//         console.log(videoUrl);
-	//         recorder.current?.save((new Date()).toDateString()); // Save the recorded video
-	//       }
-	//     });
-	//   } else {
-	//     console.error("Cannot stop recording, recorder is undefined");
-	//   }
-	// };
-
-	// useEffect(() => {
-	//   const handleBeforeUnload = () => {
-	//     if (isDetect.current) {
-	//       stopRecording();
-	//     }
-	//   };
-	//   window.addEventListener("popstate", handleBeforeUnload);
-	//   window.addEventListener("beforeunload", handleBeforeUnload);
-
-	//   return () => {
-	//     window.removeEventListener("beforeunload", handleBeforeUnload);
-	//     window.removeEventListener("popstate", handleBeforeUnload);
-	//   };
-	// }, []);
-
 	useEffect(() => {
 		if (stream) {
 			if (userVideo.current) {
@@ -432,7 +309,6 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 
 							userVideo.current.width = containerWidth;
 							userVideo.current.height = containerHeight;
-							// setIsLoading(false);
 
 							if (canvasRef.current) {
 								canvasRef.current.width = containerWidth;
@@ -444,16 +320,6 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 			}
 		}
 	}, [stream]);
-
-	// useEffect(() => {
-	// 	if (stream && canvasRef.current && userVideo.current) {
-	// 		// const parentBox = canvasRef.current.parentElement;
-
-	//     canvasRef.current.width = userVideo.current.width;
-	//     canvasRef.current.height = userVideo.current.height;
-
-	// 	}
-	// }, [stream, canvasRef.current, userVideo.current]);
 
 	return (
 		<VideoContainer
