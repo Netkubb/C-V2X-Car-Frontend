@@ -40,8 +40,6 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 	const isOnlineRef = useRef<boolean>(false);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [roomID, setRoomID] = useState<string | null>(null);
-	let mediaRecorder: any = useRef();
-	let recordedChunks: any = useRef([]);
 	const videoDownloadRef: any = useRef();
 
 	useEffect(() => {
@@ -181,72 +179,6 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 				}
 			}
 		);
-	};
-
-	function readFile(file: any) {
-		console.log('readFile()=>', file);
-		return new Promise(function (resolve, reject) {
-			let fr = new FileReader();
-
-			fr.onload = function () {
-				resolve(fr.result);
-			};
-
-			fr.onerror = function () {
-				reject(fr);
-			};
-
-			fr.readAsDataURL(file);
-		});
-	}
-
-	const uploadVideo = async (base64: any) => {
-		console.log('uploading to backend...');
-		try {
-			fetch(`${process.env.NEXT_PUBLIC_API_URL}/videos/upload`, {
-				method: 'POST',
-				body: JSON.stringify({
-					data: base64,
-					fileName: `${carID}-${camNumber}-${new Date().getTime()}`,
-				}),
-				headers: { 'Content-Type': 'application/json' },
-			}).then((response) => {
-				console.log('successfull session', response.status);
-			});
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	const stopCamHandler = () => {
-		console.log('Hanging up the call ...');
-		mediaRecorder.current.onstop = async (event: any) => {
-			let blob = new Blob(recordedChunks.current, {
-				type: 'video/mp4',
-			});
-			recordedChunks.current = [];
-
-			// Create a FileReader to read the blob as base64
-			let reader = new FileReader();
-			reader.readAsDataURL(blob);
-
-			// Define a callback function when reading is complete
-			reader.onloadend = async () => {
-				// Convert the base64 string to a format suitable for uploading
-				let base64Data = reader.result?.toString().split(',')[1];
-
-				// Save original video to cloudinary
-				await uploadVideo(base64Data);
-
-				// Optionally, provide a download link for the user
-				videoDownloadRef.current.href = URL.createObjectURL(blob);
-				videoDownloadRef.current.download =
-					`${carID}-${camNumber}-` + new Date().getTime() + '.webm';
-				videoDownloadRef.current.target = '_blank';
-			};
-		};
-
-		mediaRecorder.current.stop();
 	};
 
 	useEffect(() => {
