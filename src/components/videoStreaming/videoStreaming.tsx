@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 // @ts-ignore
 import RTCMultiConnection from 'rtcmulticonnection';
 import { io, Socket } from 'socket.io-client';
-import styled from 'styled-components';
 import { TailSpin } from 'react-loader-spinner';
 import RenderBoxes from './renderBox';
 import NewVideoStream from './newVideoStream';
+import { BlackWindow, Status, VideoContainer } from './videoStreaming.styled';
 
 type StreamVideoProps = {
 	isShow: boolean;
@@ -21,53 +21,6 @@ type StreamVideoProps = {
 const LoadingSpinner: React.FC = () => (
 	<TailSpin color="white" height={50} width={50} />
 );
-
-const BlackWindow = styled.div`
-	width: 100%;
-	height: 100%;
-	background-color: black;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-`;
-
-const VideoContainer = styled.div<{
-	isShow: boolean;
-	isInitDetection: boolean;
-}>`
-	width: 100%;
-	height: 100%;
-	position: relative;
-	${(props) =>
-		!props.isInitDetection
-			? `display:flex;visibility :hidden;`
-			: `display:none;`}
-	${(props) =>
-		props.isInitDetection
-			? props.isShow
-				? `
-    display: flex !important;
-    visibility :visible;
-    `
-				: `
-    display: none;
-    visibility :hidden;
-  `
-			: ''}
-`;
-
-const Status = styled.div<{ online: boolean }>`
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	z-index: 99;
-	width: 15px;
-	height: 15px;
-	border-radius: 50%;
-	margin: 10px;
-	background-color: ${(props) => (props.online ? 'green' : 'red')};
-`;
 
 const StreamVideo: React.FC<StreamVideoProps> = ({
 	isShow,
