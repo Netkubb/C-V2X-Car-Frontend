@@ -8,6 +8,7 @@ import useVideoStream from './hooks/useVideoStream';
 import useRegisterCam from './hooks/useRegisterCam';
 
 type StreamVideoProps = {
+	camSUUID: string;
 	isShow: boolean;
 	carID: string;
 	camNumber: string;
@@ -21,6 +22,7 @@ const LoadingSpinner: React.FC = () => (
 );
 
 const StreamVideo: React.FC<StreamVideoProps> = ({
+	camSUUID,
 	isShow,
 	carID,
 	camNumber,
@@ -33,13 +35,12 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 
 	const controlCenterSocket = useRef<Socket>();
 
-	const streamServerUrl = 'http://localhost:8083';
-	const suuid = 'my_suuid';
+	const streamServerUrl = 'http://localhost:3426';
 	const isStreamServerInSameNetwork = true;
 
 	const { stream, connection, isOnline } = useVideoStream({
 		streamServerUrl,
-		suuid,
+		suuid: camSUUID,
 		isStreamServerInSameNetwork,
 	});
 
@@ -52,7 +53,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 	useObjectDetection({
 		controlCenterSocket,
 		canvasRef,
-		roomID: suuid,
+		roomID: camSUUID,
 		isShowObjectDetection,
 		isStream,
 	});
