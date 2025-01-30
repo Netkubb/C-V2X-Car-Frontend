@@ -1,18 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-// @ts-ignore
-import RTCMultiConnection from 'rtcmulticonnection';
-import { io, Socket } from 'socket.io-client';
+import React, { useRef } from 'react';
+import { Socket } from 'socket.io-client';
 import { TailSpin } from 'react-loader-spinner';
-import RenderBoxes from './renderBox';
-import NewVideoStream from './newVideoStream';
 import { BlackWindow, Status, VideoContainer } from './videoStreaming.styled';
+import useObjectDetection from './hooks/useObjectDetection';
+import useUpdateVideoAndCanvasDimensions from './hooks/useVideoAndCanvasDimensions';
+import useVideoStream from './hooks/useVideoStream';
+import useRegisterCam from './hooks/useRegisterCam';
 
 type StreamVideoProps = {
 	isShow: boolean;
 	carID: string;
 	camNumber: string;
-	key: string;
-	sourceNumber: number;
 	isShowObjectDetection: boolean;
 	isStream: boolean;
 	isInitDetection: boolean;
@@ -26,185 +24,40 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 	isShow,
 	carID,
 	camNumber,
-	sourceNumber,
-	key,
 	isShowObjectDetection,
 	isStream,
 	isInitDetection,
 }) => {
-	const connection = useRef<RTCMultiConnection>();
-	const [stream, setStream] = useState<MediaStream | undefined>();
-	const socket = useRef<Socket>();
 	const userVideo = useRef<HTMLVideoElement>(null);
-	const [isOnline, setIsOnline] = useState<boolean>(false);
-	const isOnlineRef = useRef<boolean>(false);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const [roomID, setRoomID] = useState<string | null>(null);
-	const videoDownloadRef: any = useRef();
 
-	useEffect(() => {
-		const initUserVideo = async () => {
-			try {
-				const devices = await navigator.mediaDevices.enumerateDevices();
-				const stream = await selectDevice(devices);
-				if (stream) {
-					setStream(stream);
-				}
-				while (!userVideo.current) {
-					await new Promise((resolve) => setTimeout(resolve, 300)); // Wait for 100ms
-				}
-				if (userVideo.current) {
-					userVideo.current.srcObject = stream || null;
-				}
-			} catch (error) {
-				console.error('Error accessing webcam:', error);
-			}
-		};
+	const controlCenterSocket = useRef<Socket>();
 
-		initUserVideo();
-	}, []);
+	const streamServerUrl = 'http://localhost:8083';
+	const suuid = 'my_suuid';
+	const isStreamServerInSameNetwork = true;
 
-	const selectDevice = (devices: MediaDeviceInfo[]) => {
-		const videoDevices = devices.filter(
-			(device) => device.kind === 'videoinput'
-		);
-		if (videoDevices.length === 0) {
-			console.error('No video input devices found');
-			return;
-		}
-		console.log(videoDevices);
-		const selectedDevice = videoDevices[Number(sourceNumber)].deviceId;
+	const { stream, connection, isOnline } = useVideoStream({
+		streamServerUrl,
+		suuid,
+		isStreamServerInSameNetwork,
+	});
 
-		const constraints = {
-			video: {
-				deviceId: { exact: selectedDevice },
-			},
-			audio: false,
-		};
+	useRegisterCam({
+		controlCenterSocket,
+		carID,
+		camNumber,
+	});
 
-		return navigator.mediaDevices.getUserMedia(constraints);
-	};
-
-	useEffect(() => {
-		if (
-			socket.current &&
-			canvasRef.current &&
-			connection.current &&
-			isShowObjectDetection &&
-			isStream
-		) {
-			socket?.current?.emit('control center connecting', {
-				roomID: connection.current.sessionid,
-			});
-			socket?.current?.on('send object detection', (boxes: Array<any>) => {
-				if (canvasRef.current) {
-					RenderBoxes({ canvas: canvasRef.current, boxes: boxes });
-				}
-			});
-		}
-	}, [
-		canvasRef.current,
-		socket.current,
-		connection.current,
+	useObjectDetection({
+		controlCenterSocket,
+		canvasRef,
+		roomID: suuid,
 		isShowObjectDetection,
-	]);
+		isStream,
+	});
 
-	useEffect(() => {
-		if (!connection.current) {
-			connection.current = new RTCMultiConnection();
-
-			connection.current.socketURL = process.env.NEXT_PUBLIC_API_CAM_URI + '/';
-			console.log(process.env.NEXT_PUBLIC_API_CAM_URI + '/');
-
-			socket.current = io(
-				process.env.NEXT_PUBLIC_API_CAM_URI || '<API-CAM-URL>'
-			) as Socket;
-			socket.current.emit('car connecting', {
-				carID: carID,
-				camNumber: camNumber,
-			});
-
-			connection.current.socketMessageEvent = 'video-broadcast-demo';
-
-			connection.current.session = {
-				audio: false,
-				video: true,
-				oneway: true,
-			};
-
-			connection.current.dontCaptureUserMedia = true;
-
-			navigator.mediaDevices
-				.enumerateDevices()
-				.then((devices) => selectDevice(devices))
-				.then((video) => {
-					setStream(video);
-					socket.current?.on('start detecting', () => {
-						console.log('start detect');
-					});
-
-					socket.current?.on('stop detecting', () => {
-						console.log('stop detect');
-					});
-					connection.current.videosContainer = document.getElementById(
-						`videos-container${camNumber}`
-					);
-
-					connection.current.attachStreams = [video];
-					if (isStream) {
-						startStreaming();
-						setInterval(() => {
-							startStreaming();
-						}, 60000);
-						console.log('start rec', sourceNumber);
-					}
-				});
-		}
-	}, []);
-
-	const startStreaming = () => {
-		connection.current.sdpConstraints.mandatory = {
-			OfferToReceiveAudio: false,
-			OfferToReceiveVideo: false,
-		};
-		connection.current.open(
-			`Room${carID}${camNumber}`,
-			function (isRoomOpened: boolean) {
-				isOnlineRef.current = isRoomOpened;
-				setIsOnline(isRoomOpened);
-				console.log(connection.current.sessionid);
-				setRoomID(connection.current.sessionid);
-				if (!isRoomOpened) {
-					window.location.reload();
-				}
-			}
-		);
-	};
-
-	useEffect(() => {
-		if (stream) {
-			if (userVideo.current) {
-				userVideo.current.srcObject = stream;
-				userVideo.current.onloadedmetadata = () => {
-					if (userVideo.current) {
-						const container = userVideo.current.parentElement;
-						if (container) {
-							const containerWidth = container.clientWidth;
-							const containerHeight = container.clientHeight;
-
-							userVideo.current.width = containerWidth;
-							userVideo.current.height = containerHeight;
-
-							if (canvasRef.current) {
-								canvasRef.current.width = containerWidth;
-								canvasRef.current.height = containerHeight;
-							}
-						}
-					}
-				};
-			}
-		}
-	}, [stream]);
+	useUpdateVideoAndCanvasDimensions({ stream, userVideo, canvasRef });
 
 	return (
 		<VideoContainer
@@ -212,17 +65,11 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 			isInitDetection={isInitDetection}
 			id={`videos-container${camNumber}`}
 		>
-			<button className="button" style={{ display: 'none' }}>
-				<a ref={videoDownloadRef}></a>
-			</button>
 			{isStream ? <Status online={isOnline} /> : null}
 			<>
 				{stream ? (
 					<div className="w-full h-full flex items-center justify-center">
-						<NewVideoStream
-							stream_server="http://localhost:8083"
-							suuid="my_suuid"
-						/>
+						<video ref={userVideo} autoPlay muted playsInline />
 						<canvas
 							id="canvas"
 							ref={canvasRef}
