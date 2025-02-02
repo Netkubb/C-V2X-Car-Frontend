@@ -10,19 +10,19 @@ export const BlackWindow = styled.div`
 `;
 
 export const VideoContainer = styled.div<{
-	isShow: boolean;
-	isInitDetection: boolean;
+	isshow: 'true' | 'false';
+	isinitdetection: 'true' | 'false';
 }>`
 	width: 100%;
 	height: 100%;
 	position: relative;
 	${(props) =>
-		!props.isInitDetection
+		!props.isinitdetection
 			? `display:flex;visibility :hidden;`
 			: `display:none;`}
 	${(props) =>
-		props.isInitDetection
-			? props.isShow
+		props.isinitdetection
+			? props.isshow
 				? `
     display: flex !important;
     visibility :visible;
@@ -34,7 +34,7 @@ export const VideoContainer = styled.div<{
 			: ''}
 `;
 
-export const Status = styled.div<{ online: boolean }>`
+export const Status = styled.div<{ isonline: 'true' | 'false' }>`
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -44,5 +44,5 @@ export const Status = styled.div<{ online: boolean }>`
 	height: 15px;
 	border-radius: 50%;
 	margin: 10px;
-	background-color: ${(props) => (props.online ? 'green' : 'red')};
+	background-color: ${(props) => (props.isonline ? 'green' : 'red')};
 `;

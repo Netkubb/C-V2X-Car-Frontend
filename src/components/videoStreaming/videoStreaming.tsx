@@ -35,8 +35,8 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 
 	const controlCenterSocket = useRef<Socket>();
 
-	const streamServerUrl = 'http://localhost:3426';
-	const isStreamServerInSameNetwork = true;
+	const streamServerUrl = 'http://localhost:8083';
+	const isStreamServerInSameNetwork = false;
 
 	const { stream, connection, isOnline } = useVideoStream({
 		streamServerUrl,
@@ -62,15 +62,15 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 
 	return (
 		<VideoContainer
-			isShow={isShow}
-			isInitDetection={isInitDetection}
+			isshow={isShow ? 'true' : 'false'}
+			isinitdetection={isInitDetection ? 'true' : 'false'}
 			id={`videos-container${camNumber}`}
 		>
-			{isStream ? <Status online={isOnline} /> : null}
+			{isStream ? <Status isonline={isOnline ? 'true' : 'false'} /> : null}
 			<>
 				{stream ? (
 					<div className="w-full h-full flex items-center justify-center">
-						<video ref={userVideo} autoPlay muted playsInline />
+						<video ref={userVideo} autoPlay muted controls />
 						<canvas
 							id="canvas"
 							ref={canvasRef}
