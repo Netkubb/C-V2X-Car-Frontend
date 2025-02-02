@@ -23,7 +23,9 @@ const useVideoStream = ({
 				],
 		  };
 
-	const connection = useMemo(() => new RTCPeerConnection(config), [config]);
+	// Config will be re-created every time the component re-renders,
+	// so we will not include it in the dependency array
+	const connection = useMemo(() => new RTCPeerConnection(config), []);
 
 	useEffect(() => {
 		const log = (msg: string) => {
@@ -68,12 +70,12 @@ const useVideoStream = ({
 					{
 						method: 'POST',
 						headers: {
-							'Content-Type': 'application/json',
+							'Content-Type': 'application/x-www-form-urlencoded',
+							charset: 'utf-8',
 						},
-						body: JSON.stringify({
-							suuid,
-							data: btoa(connection.localDescription.sdp),
-						}),
+						body: `suuid=${encodeURIComponent(suuid)}&data=${encodeURIComponent(
+							btoa(connection.localDescription.sdp)
+						)}`,
 					}
 				);
 				const data = await response.text();
