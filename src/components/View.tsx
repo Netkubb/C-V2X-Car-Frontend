@@ -1,51 +1,51 @@
-import React, { RefObject } from "react";
-import Video from "./Video";
-import styles from "./Video.module.css";
-import { WebRTCUser } from "../utils/webRTCUser";
+import React, { RefObject } from 'react';
+import Video from './Video';
+import styles from './Video.module.css';
+import { WebRTCUser } from '../utils/webRTCUser';
 
 interface ThumbnailViewProps {
-  thumbnailUsers: WebRTCUser[];
-  localThumbnailVideoRef: RefObject<HTMLVideoElement | null>;
-  onVideoClick: (userId: string) => void;
+	thumbnailUsers: WebRTCUser[];
+	localThumbnailVideoRef: RefObject<HTMLVideoElement>;
+	onVideoClick: (userId: string) => void;
 }
 
 interface DedicatedViewProps {
-  selectedUser: WebRTCUser;
-  onBack: () => void;
+	selectedUser: WebRTCUser;
+	onBack: () => void;
 }
 
 export const ThumbnailVideoView: React.FC<ThumbnailViewProps> = ({
-  thumbnailUsers,
-  localThumbnailVideoRef,
-  onVideoClick,
+	thumbnailUsers,
+	localThumbnailVideoRef,
+	onVideoClick,
 }) => (
-  <div>
-    <video
-      className={styles.video}
-      muted
-      ref={localThumbnailVideoRef}
-      autoPlay
-    />
-    {thumbnailUsers.map((user) => (
-      <Video
-        key={user.id}
-        stream={user.stream}
-        onVideoClick={onVideoClick}
-        userId={user.id}
-      />
-    ))}
-  </div>
+	<div>
+		<video
+			className={styles.video}
+			muted
+			ref={localThumbnailVideoRef}
+			autoPlay
+		/>
+		{thumbnailUsers.map((user) => (
+			<Video
+				key={user.id}
+				stream={user.stream}
+				onVideoClick={onVideoClick}
+				userId={user.id}
+			/>
+		))}
+	</div>
 );
 
 export const DedicatedVideoView: React.FC<DedicatedViewProps> = ({
-  selectedUser,
-  onBack,
+	selectedUser,
+	onBack,
 }) => (
-  <div>
-    <Video
-      stream={selectedUser.stream}
-      onVideoClick={onBack}
-      userId={selectedUser.id}
-    />
-  </div>
+	<div>
+		<Video
+			stream={selectedUser.stream}
+			onVideoClick={onBack}
+			userId={selectedUser.id}
+		/>
+	</div>
 );
