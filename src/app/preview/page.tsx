@@ -1,8 +1,11 @@
 'use client';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { useRouter } from 'next/navigation';
 import { ThumbnailVideoView, DedicatedVideoView } from '../../components/View';
 import { WebRTCUser } from '../../utils/webRTCUser';
+import Button from '@/components/Button';
+import { IconName } from '@/const/IconName';
 
 const pc_config = {
 	iceServers: [
@@ -12,10 +15,13 @@ const pc_config = {
 	],
 };
 
-const SOCKET_THUMBNAIL_SERVER_URL = 'http://localhost:8080';
-const SOCKET_DEDICATED_SERVER_URL = 'http://localhost:8081';
+const SOCKET_THUMBNAIL_SERVER_URL =
+	process.env.NEXT_PUBLIC_THUMBNAIL_SERVER_URL ?? 'http://localhost:8080';
+const SOCKET_DEDICATED_SERVER_URL =
+	process.env.NEXT_PUBLIC_DEDICATED_SERVER_URL ?? 'http://localhost:8081';
 
 export default function Home() {
+	const router = useRouter();
 	const localThumbnailSocketRef = useRef<Socket | null>(null);
 	const localDedicatedSocketRef = useRef<Socket | null>(null);
 	const localThumbnailStreamRef = useRef<MediaStream | null>(null);
@@ -88,7 +94,7 @@ export default function Home() {
 				return undefined;
 			}
 		},
-		[]
+		[],
 	);
 
 	const createDedicatedReceiverOffer = useCallback(
@@ -112,7 +118,7 @@ export default function Home() {
 				console.log(error);
 			}
 		},
-		[]
+		[],
 	);
 
 	const createDedicatedReceivePC = useCallback(
@@ -126,7 +132,7 @@ export default function Home() {
 				console.log(error);
 			}
 		},
-		[createDedicatedReceiverOffer, createDedicatedReceiverPeerConnection]
+		[createDedicatedReceiverOffer, createDedicatedReceiverPeerConnection],
 	);
 
 	const closeReceivePC = useCallback((id: string) => {
@@ -156,7 +162,7 @@ export default function Home() {
 				console.log(error);
 			}
 		},
-		[]
+		[],
 	);
 
 	const createReceiverPeerConnection = useCallback((socketID: string) => {
@@ -191,7 +197,7 @@ export default function Home() {
 						.concat({
 							id: socketID,
 							stream: e.streams[0],
-						})
+						}),
 				);
 			};
 
@@ -213,7 +219,7 @@ export default function Home() {
 				console.log(error);
 			}
 		},
-		[createReceiverOffer, createReceiverPeerConnection]
+		[createReceiverOffer, createReceiverPeerConnection],
 	);
 
 	const createSenderOffer = useCallback(async () => {
@@ -231,10 +237,10 @@ export default function Home() {
 			console.log('create sender offer success');
 
 			await thumbnailSendPCRef.current.setLocalDescription(
-				new RTCSessionDescription(thumbnailSdp)
+				new RTCSessionDescription(thumbnailSdp),
 			);
 			await dedicatedSendPCRef.current.setLocalDescription(
-				new RTCSessionDescription(dedicatedSdp)
+				new RTCSessionDescription(dedicatedSdp),
 			);
 
 			if (!localThumbnailSocketRef.current) return;
@@ -376,7 +382,7 @@ export default function Home() {
 			'allUsers',
 			(data: { users: Array<{ id: string }> }) => {
 				data.users.forEach((user) => createReceivePC(user.id));
-			}
+			},
 		);
 
 		localThumbnailSocketRef.current.on('userExit', (data: { id: string }) => {
@@ -392,12 +398,12 @@ export default function Home() {
 					console.log('get sender answer');
 					console.log(data.sdp);
 					await thumbnailSendPCRef.current.setRemoteDescription(
-						new RTCSessionDescription(data.sdp)
+						new RTCSessionDescription(data.sdp),
 					);
 				} catch (error) {
 					console.log(error);
 				}
-			}
+			},
 		);
 
 		localDedicatedSocketRef.current.on(
@@ -408,12 +414,12 @@ export default function Home() {
 					console.log('get dedicated sender answer');
 					console.log(data.sdp);
 					await dedicatedSendPCRef.current.setRemoteDescription(
-						new RTCSessionDescription(data.sdp)
+						new RTCSessionDescription(data.sdp),
 					);
 				} catch (error) {
 					console.log(error);
 				}
-			}
+			},
 		);
 
 		localThumbnailSocketRef.current.on(
@@ -423,13 +429,13 @@ export default function Home() {
 					if (!(data.candidate && thumbnailSendPCRef.current)) return;
 					console.log('get sender candidate');
 					await thumbnailSendPCRef.current.addIceCandidate(
-						new RTCIceCandidate(data.candidate)
+						new RTCIceCandidate(data.candidate),
 					);
 					console.log('candidate add success');
 				} catch (error) {
 					console.log(error);
 				}
-			}
+			},
 		);
 
 		localDedicatedSocketRef.current.on(
@@ -440,13 +446,13 @@ export default function Home() {
 					if (!(data.candidate && dedicatedSendPCRef.current)) return;
 					console.log('get dedicated sender candidate');
 					await dedicatedSendPCRef.current.addIceCandidate(
-						new RTCIceCandidate(data.candidate)
+						new RTCIceCandidate(data.candidate),
 					);
 					console.log('dedicated candidate add success');
 				} catch (error) {
 					console.log(error);
 				}
-			}
+			},
 		);
 
 		localThumbnailSocketRef.current.on(
@@ -461,7 +467,7 @@ export default function Home() {
 				} catch (error) {
 					console.log(error);
 				}
-			}
+			},
 		);
 
 		localDedicatedSocketRef.current.on(
@@ -473,12 +479,12 @@ export default function Home() {
 					if (!pc) return;
 					await pc.setRemoteDescription(data.sdp);
 					console.log(
-						`dedicated socketID(${data.id})'s set remote sdp success`
+						`dedicated socketID(${data.id})'s set remote sdp success`,
 					);
 				} catch (error) {
 					console.log(error);
 				}
-			}
+			},
 		);
 
 		localThumbnailSocketRef.current.on(
@@ -494,7 +500,7 @@ export default function Home() {
 				} catch (error) {
 					console.log(error);
 				}
-			}
+			},
 		);
 
 		localDedicatedSocketRef.current.on(
@@ -513,7 +519,7 @@ export default function Home() {
 				} catch (error) {
 					console.log(error);
 				}
-			}
+			},
 		);
 
 		return () => {
@@ -550,21 +556,35 @@ export default function Home() {
 		injectLocalStream();
 	}, [injectLocalStream, selectedDedicatedUser]);
 
-	console.log(`THUMBNAIL VIDEO REF >> ${localThumbnailVideoRef.current}`);
-
 	return (
 		<div>
 			{selectedDedicatedUser === null ? (
-				<ThumbnailVideoView
-					thumbnailUsers={thumbnailUsers}
-					localThumbnailVideoRef={localThumbnailVideoRef}
-					onVideoClick={createDedicatedReceivePC}
-				/>
+				<div>
+					<ThumbnailVideoView
+						thumbnailUsers={thumbnailUsers}
+						localThumbnailVideoRef={localThumbnailVideoRef}
+						onVideoClick={createDedicatedReceivePC}
+					/>
+					<div className="px-4 py-2  rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+						<Button
+							iconName={IconName.Back}
+							onClick={() => router.push('/dashboard')}
+						/>
+					</div>
+				</div>
 			) : (
-				<DedicatedVideoView
-					selectedUser={selectedDedicatedUser}
-					onBack={handleBackFromDedicatedView}
-				/>
+				<div>
+					<DedicatedVideoView
+						selectedUser={selectedDedicatedUser}
+						onBack={handleBackFromDedicatedView}
+					/>
+					<div className="px-4 py-2  rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+						<Button
+							iconName={IconName.Back}
+							onClick={handleBackFromDedicatedView}
+						/>
+					</div>
+				</div>
 			)}
 		</div>
 	);
