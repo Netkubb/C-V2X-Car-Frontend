@@ -1,6 +1,5 @@
 import React, { RefObject } from 'react';
 import Video from './Video';
-import styles from './Video.module.css';
 import { WebRTCUser } from '../utils/webRTCUser';
 
 interface ThumbnailViewProps {
@@ -20,22 +19,31 @@ export const ThumbnailVideoView: React.FC<ThumbnailViewProps> = ({
 	onVideoClick,
 }) => (
 	<div>
-		<p className="font-istok text-black text-p1">Local Video</p>
+		<p className="font-istok text-black text-h2 border-b-2 border-gray-400 pb-2">
+			Video Thumbnail View
+		</p>
+		<p className="font-istok text-black text-p1 border border-gray-300 rounded-md px-2 py-1 inline-block">
+			Local Video
+		</p>
 		<video
-			className={styles.video}
+			className="rounded-lg mt-2"
 			muted
 			ref={localThumbnailVideoRef}
 			autoPlay
 		/>
-		<p className="font-istok text-black text-p1">Local Video</p>
-		{thumbnailUsers.map((user) => (
-			<Video
-				key={user.id}
-				stream={user.stream}
-				onVideoClick={onVideoClick}
-				userId={user.id}
-			/>
-		))}
+		<p className="font-istok text-black text-p1 border border-gray-300 rounded-md px-2 py-1 inline-block mt-4">
+			Other Cars Video
+		</p>
+		<div className="flex flex-wrap gap-4 mt-2">
+			{thumbnailUsers.map((user) => (
+				<Video
+					key={user.id}
+					stream={user.stream}
+					onVideoClick={onVideoClick}
+					userId={user.id}
+				/>
+			))}
+		</div>
 	</div>
 );
 
@@ -44,6 +52,7 @@ export const DedicatedVideoView: React.FC<DedicatedViewProps> = ({
 	onBack,
 }) => (
 	<div>
+		<p className="font-istok text-black text-h2">Dedicated View</p>
 		<Video
 			stream={selectedUser.stream}
 			onVideoClick={onBack}

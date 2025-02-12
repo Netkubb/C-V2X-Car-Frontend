@@ -17,9 +17,13 @@ const Video = ({ stream, onVideoClick, userId, muted }: VideoProps) => {
 	}, [stream, muted]);
 
 	return (
-		<div className="relative w-28 h-20" onClick={() => onVideoClick(userId)}>
-			<video ref={ref} muted={isMuted} autoPlay />
-		</div>
+		<video
+			className="rounded-lg mt-2"
+			onClick={() => onVideoClick(userId)}
+			ref={ref}
+			muted={isMuted}
+			autoPlay
+		/>
 	);
 };
 
