@@ -6,4 +6,5 @@ export enum IconName {
 	NoObj = 'No Oject Detection',
 	Login = 'Login',
 	Logout = 'Logout',
+	Preview = 'Preview',
 }

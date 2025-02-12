@@ -14,6 +14,7 @@ const iconStyles: Record<IconName, string> = {
 	[IconName.NoObj]: 'bg-white border-2 border-dark_grey text-dark_grey',
 	[IconName.Login]: 'bg-blue text-white',
 	[IconName.Logout]: 'bg-dark_grey text-white',
+	[IconName.Preview]: 'bg-blue text-white',
 };
 
 const iconComponents: Record<IconName, JSX.Element> = {
@@ -24,6 +25,7 @@ const iconComponents: Record<IconName, JSX.Element> = {
 	[IconName.NoObj]: <LuBox style={{ width: 58, height: 58 }} />,
 	[IconName.Login]: <p className="font-istok text-h4">Login</p>,
 	[IconName.Logout]: <MdOutlineExitToApp style={{ width: 58, height: 58 }} />,
+	[IconName.Preview]: <p className="font-istok text-h3">Preview</p>,
 };
 
 export default function Button({
