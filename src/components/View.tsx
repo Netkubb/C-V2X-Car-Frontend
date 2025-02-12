@@ -27,6 +27,7 @@ export const ThumbnailVideoView: React.FC<ThumbnailViewProps> = ({
 			ref={localThumbnailVideoRef}
 			autoPlay
 		/>
+		<p className="font-istok text-black text-p1">Local Video</p>
 		{thumbnailUsers.map((user) => (
 			<Video
 				key={user.id}

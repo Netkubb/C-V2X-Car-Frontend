@@ -552,9 +552,6 @@ export default function Home() {
 		injectLocalStream();
 	}, [injectLocalStream, selectedDedicatedUser]);
 
-	console.log(`THUMBNAIL URL >> ${SOCKET_THUMBNAIL_SERVER_URL}`);
-	console.log(`DEDICATED URL >> ${SOCKET_DEDICATED_SERVER_URL}`);
-
 	return (
 		<div>
 			{selectedDedicatedUser === null ? (
