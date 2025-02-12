@@ -7,4 +7,5 @@ export enum IconName {
 	Login = 'Login',
 	Logout = 'Logout',
 	Preview = 'Preview',
+	Back = 'Back',
 }

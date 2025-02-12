@@ -1,8 +1,11 @@
 'use client';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { useRouter } from 'next/navigation';
 import { ThumbnailVideoView, DedicatedVideoView } from '../../components/View';
 import { WebRTCUser } from '../../utils/webRTCUser';
+import Button from '@/components/Button';
+import { IconName } from '@/const/IconName';
 
 const pc_config = {
 	iceServers: [
@@ -18,6 +21,7 @@ const SOCKET_DEDICATED_SERVER_URL =
 	process.env.NEXT_PUBLIC_DEDICATED_SERVER_URL ?? 'http://localhost:8081';
 
 export default function Home() {
+	const router = useRouter();
 	const localThumbnailSocketRef = useRef<Socket | null>(null);
 	const localDedicatedSocketRef = useRef<Socket | null>(null);
 	const localThumbnailStreamRef = useRef<MediaStream | null>(null);
@@ -555,16 +559,32 @@ export default function Home() {
 	return (
 		<div>
 			{selectedDedicatedUser === null ? (
-				<ThumbnailVideoView
-					thumbnailUsers={thumbnailUsers}
-					localThumbnailVideoRef={localThumbnailVideoRef}
-					onVideoClick={createDedicatedReceivePC}
-				/>
+				<div>
+					<ThumbnailVideoView
+						thumbnailUsers={thumbnailUsers}
+						localThumbnailVideoRef={localThumbnailVideoRef}
+						onVideoClick={createDedicatedReceivePC}
+					/>
+					<div className="px-4 py-2  rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+						<Button
+							iconName={IconName.Back}
+							onClick={() => router.push('/dashboard')}
+						/>
+					</div>
+				</div>
 			) : (
-				<DedicatedVideoView
-					selectedUser={selectedDedicatedUser}
-					onBack={handleBackFromDedicatedView}
-				/>
+				<div>
+					<DedicatedVideoView
+						selectedUser={selectedDedicatedUser}
+						onBack={handleBackFromDedicatedView}
+					/>
+					<div className="px-4 py-2  rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">
+						<Button
+							iconName={IconName.Back}
+							onClick={handleBackFromDedicatedView}
+						/>
+					</div>
+				</div>
 			)}
 		</div>
 	);
