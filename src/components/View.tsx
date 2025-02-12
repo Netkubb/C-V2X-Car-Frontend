@@ -20,6 +20,7 @@ export const ThumbnailVideoView: React.FC<ThumbnailViewProps> = ({
 	onVideoClick,
 }) => (
 	<div>
+		<p className="font-istok text-black text-p1">Local Video</p>
 		<video
 			className={styles.video}
 			muted
