@@ -13,9 +13,9 @@ const pc_config = {
 };
 
 const SOCKET_THUMBNAIL_SERVER_URL =
-	process.env.NEXT_PUBLIC_THUMBNAIL_SERVER_URL ?? 'http://localhost:8080';
+	process.env.NEXT_PUBLIC_THUMBNAIL_SERVER_URL ?? 'test://localhost:8080';
 const SOCKET_DEDICATED_SERVER_URL =
-	process.env.NEXT_PUBLIC_DEDICATED_SERVER_URL ?? 'http://localhost:8081';
+	process.env.NEXT_PUBLIC_DEDICATED_SERVER_URL ?? 'test://localhost:8081';
 
 export default function Home() {
 	const localThumbnailSocketRef = useRef<Socket | null>(null);
@@ -552,7 +552,8 @@ export default function Home() {
 		injectLocalStream();
 	}, [injectLocalStream, selectedDedicatedUser]);
 
-	console.log(`THUMBNAIL VIDEO REF >> ${localThumbnailVideoRef.current}`);
+	console.log(`THUMBNAIL URL >> ${SOCKET_THUMBNAIL_SERVER_URL}`);
+	console.log(`DEDICATED URL >> ${SOCKET_DEDICATED_SERVER_URL}`);
 
 	return (
 		<div>
