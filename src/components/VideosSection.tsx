@@ -2,13 +2,8 @@ import { useEffect, useState } from 'react';
 import StreamVideo from './videoStreaming/videoStreaming';
 
 const carID = process.env.NEXT_PUBLIC_CAR_ID?.toString() || '';
-const camIDs = [
-	process.env.NEXT_PUBLIC_CAM_FRONT?.toString() || '',
-	process.env.NEXT_PUBLIC_CAM_BACK?.toString() || '',
-	process.env.NEXT_PUBLIC_CAM_LEFT?.toString() || '',
-	process.env.NEXT_PUBLIC_CAM_RIGHT?.toString() || '',
-];
-const camSUUIDs = ['my_suuid', 'my_suuid', 'my_suuid', 'my_suuid'];
+const camIDs = [process.env.NEXT_PUBLIC_CAM_FRONT?.toString() || ''];
+const camSUUIDs = ['my_suuid'];
 
 export default function VideosSection({
 	isObjectDetectionOn,

@@ -14,7 +14,7 @@ export const VideoContainer = styled.div<{
 	isinitdetection: 'true' | 'false';
 }>`
 	width: 100%;
-	height: 100%;
+	height: 60%;
 	position: relative;
 	${(props) =>
 		!props.isinitdetection
