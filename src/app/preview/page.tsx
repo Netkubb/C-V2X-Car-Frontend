@@ -6,6 +6,7 @@ import { ThumbnailVideoView, DedicatedVideoView } from '../../components/View';
 import { WebRTCUser } from '../../utils/webRTCUser';
 import Button from '@/components/Button';
 import { IconName } from '@/const/IconName';
+import useVideoStream from '@/components/videoStreaming/hooks/useVideoStream';
 
 const pc_config = {
 	iceServers: [
@@ -15,10 +16,23 @@ const pc_config = {
 	],
 };
 
+const camSUUIDs = 'my_suuid'; // TODO: change to dynamic env.
+
 const SOCKET_THUMBNAIL_SERVER_URL =
 	process.env.NEXT_PUBLIC_THUMBNAIL_SERVER_URL ?? 'http://localhost:8080';
 const SOCKET_DEDICATED_SERVER_URL =
 	process.env.NEXT_PUBLIC_DEDICATED_SERVER_URL ?? 'http://localhost:8081';
+const VIDEO_STREAM_SERVER_URL =
+	process.env.NEXT_PUBLIC_VIDEO_STREAM_SERVER_URL ?? 'http://localhost:8083';
+
+const createStreamWithConstraints = (
+	originalStream: MediaStream,
+	constraints: MediaTrackConstraints,
+) => {
+	const track = originalStream.getVideoTracks()[0].clone();
+	track.applyConstraints(constraints);
+	return new MediaStream([track]);
+};
 
 export default function Home() {
 	const router = useRouter();
@@ -39,6 +53,12 @@ export default function Home() {
 
 	const localThumbnailVideoRef = useRef<HTMLVideoElement>(null);
 	const localDedicatedVideoRef = useRef<HTMLVideoElement>(null);
+
+	const { stream, connection, isOnline } = useVideoStream({
+		streamServerUrl: VIDEO_STREAM_SERVER_URL,
+		suuid: camSUUIDs[0],
+		isStreamServerInSameNetwork: false,
+	});
 
 	const handleBackFromDedicatedView = useCallback(() => {
 		setSelectedDedicatedUser(null);
@@ -318,21 +338,19 @@ export default function Home() {
 
 	const injectLocalStream = useCallback(async () => {
 		try {
-			const thumbnailStream = await navigator.mediaDevices.getUserMedia({
-				audio: true,
-				video: {
-					width: 240,
-					height: 240,
-					frameRate: 0.5,
-				},
+			if (!isOnline)
+				throw new Error(
+					"Stream server is offline, couldn't inject video stream",
+				);
+			const thumbnailStream = createStreamWithConstraints(stream, {
+				width: 240,
+				height: 240,
+				frameRate: 0.5,
 			});
 
-			const highQualityStream = await navigator.mediaDevices.getUserMedia({
-				audio: true,
-				video: {
-					width: 1000,
-					height: 1000,
-				},
+			const highQualityStream = createStreamWithConstraints(stream, {
+				width: 1000,
+				height: 1000,
 			});
 
 			localThumbnailStreamRef.current = thumbnailStream;
@@ -346,9 +364,9 @@ export default function Home() {
 				localDedicatedVideoRef.current.srcObject = highQualityStream;
 			}
 		} catch (e) {
-			console.log(`injectLocalStream error: ${e}`);
+			console.error(`injectLocalStream error: ${e}`);
 		}
-	}, []);
+	}, [stream, isOnline]);
 
 	const getLocalStream = useCallback(async () => {
 		try {
