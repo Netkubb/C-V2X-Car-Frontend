@@ -13,7 +13,7 @@
 		"@types/jquery": "^3.5.32",
 		"@types/recordrtc": "^5.6.14",
 		"axios": "^1.6.7",
-		"next": "^14.2.23",
+		"next": "^14.2.24",
 		"onnxruntime-web": "^1.17.0",
 		"react": "^18",
 		"react-dom": "^18",
