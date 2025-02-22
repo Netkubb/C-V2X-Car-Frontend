@@ -9,7 +9,7 @@ start_stream_windows() {
     # Loop over each camera ID provided as argument
     for cam_id in "$@"; do
         # Start FFmpeg for each camera based on the ID passed
-        start /B ffmpeg -f dshow -i video="Integrated Webcam" -f rtsp -rtsp_transport tcp rtsp://0.0.0.0:8554/cam$cam_id
+        start /B ffmpeg -f dshow -i video="Integrated Webcam" -f rtsp -rtsp_transport tcp rtsp://localhost:8554/cam$cam_id
     done
 }
 
@@ -19,7 +19,7 @@ start_stream_mac() {
     # Loop over each camera ID provided as argument
     for cam_id in "$@"; do
         # Start FFmpeg for each camera based on the ID passed
-        ffmpeg -f avfoundation -framerate 30 -video_size 640x480 -i "$cam_id" -f rtsp -rtsp_transport tcp rtsp://0.0.0.0:8554/cam$cam_id &
+        ffmpeg -f avfoundation -framerate 30 -video_size 640x480 -i "$cam_id" -f rtsp -rtsp_transport tcp rtsp://localhost:8554/cam$cam_id &
         FFmpeg_pids[$cam_id]=$!
     done
     
