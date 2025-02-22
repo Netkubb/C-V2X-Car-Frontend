@@ -25,15 +25,6 @@ const SOCKET_DEDICATED_SERVER_URL =
 const VIDEO_STREAM_SERVER_URL =
 	process.env.NEXT_PUBLIC_VIDEO_STREAM_SERVER_URL ?? 'http://localhost:8083';
 
-const createStreamWithConstraints = (
-	originalStream: MediaStream,
-	constraints: MediaTrackConstraints,
-) => {
-	const track = originalStream.getVideoTracks()[0].clone();
-	track.applyConstraints(constraints);
-	return new MediaStream([track]);
-};
-
 export default function Home() {
 	const router = useRouter();
 	const localThumbnailSocketRef = useRef<Socket | null>(null);
@@ -59,6 +50,29 @@ export default function Home() {
 		suuid: camSUUIDs[0],
 		isStreamServerInSameNetwork: false,
 	});
+
+	const createStreamWithConstraints = async (
+		originalStream: MediaStream,
+		constraints: MediaTrackConstraints,
+	): Promise<MediaStream> => {
+		if (!originalStream || originalStream.getVideoTracks().length === 0) {
+			throw new Error(
+				'The provided stream is undefined, or there is no video tracks',
+			);
+		}
+
+		const videoTracks = originalStream.getVideoTracks();
+		const adjustedTrack = videoTracks[0].clone();
+
+		try {
+			await adjustedTrack.applyConstraints(constraints);
+		} catch (error) {
+			console.error('Failed to apply constraints:', error);
+			throw error;
+		}
+
+		return new MediaStream([adjustedTrack]);
+	};
 
 	const handleBackFromDedicatedView = useCallback(() => {
 		setSelectedDedicatedUser(null);
@@ -342,26 +356,28 @@ export default function Home() {
 				throw new Error(
 					"Stream server is offline, couldn't inject video stream",
 				);
-			const thumbnailStream = createStreamWithConstraints(stream, {
-				width: 240,
-				height: 240,
-				frameRate: 0.5,
-			});
+			if (stream) {
+				const thumbnailStream = await createStreamWithConstraints(stream, {
+					width: 240,
+					height: 240,
+					frameRate: 0.5,
+				});
 
-			const highQualityStream = createStreamWithConstraints(stream, {
-				width: 1000,
-				height: 1000,
-			});
+				const highQualityStream = await createStreamWithConstraints(stream, {
+					width: 1000,
+					height: 1000,
+				});
 
-			localThumbnailStreamRef.current = thumbnailStream;
-			if (localThumbnailVideoRef.current) {
-				console.log('local thumbnail video ref found');
-				localThumbnailVideoRef.current.srcObject = thumbnailStream;
-			}
+				localThumbnailStreamRef.current = thumbnailStream;
+				if (localThumbnailVideoRef.current) {
+					console.log('local thumbnail video ref found');
+					localThumbnailVideoRef.current.srcObject = thumbnailStream;
+				}
 
-			localDedicatedStreamRef.current = highQualityStream;
-			if (localDedicatedVideoRef.current) {
-				localDedicatedVideoRef.current.srcObject = highQualityStream;
+				localDedicatedStreamRef.current = highQualityStream;
+				if (localDedicatedVideoRef.current) {
+					localDedicatedVideoRef.current.srcObject = highQualityStream;
+				}
 			}
 		} catch (e) {
 			console.error(`injectLocalStream error: ${e}`);
