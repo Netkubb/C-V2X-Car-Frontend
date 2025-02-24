@@ -52,7 +52,7 @@ export const DedicatedVideoView: React.FC<DedicatedViewProps> = ({
 	onBack,
 }) => (
 	<div>
-		<p className="font-istok text-black text-h2">Dedicated View</p>
+		<p className="font-istok text-white text-h2">Dedicated View</p>
 		<Video
 			stream={selectedUser.stream}
 			onVideoClick={onBack}

@@ -36,9 +36,12 @@ export default function Home() {
 		[socketId: string]: RTCPeerConnection;
 	}>({});
 
+	setInterval(() => console.log(localThumbnailSocketRef.current?.id), 1000);
+
 	const dedicatedSendPCRef = useRef<RTCPeerConnection | null>(null);
 	const dedicatedReceivePCRef = useRef<RTCPeerConnection | null>(null);
 	const [thumbnailUsers, setThumbnailUsers] = useState<Array<WebRTCUser>>([]);
+	const [trackCount, setTrackCount] = useState<Number>(0);
 	const [selectedDedicatedUser, setSelectedDedicatedUser] =
 		useState<WebRTCUser | null>(null);
 
@@ -47,7 +50,7 @@ export default function Home() {
 
 	const { stream, connection, isOnline } = useVideoStream({
 		streamServerUrl: VIDEO_STREAM_SERVER_URL,
-		suuid: camSUUIDs[0],
+		suuid: camSUUIDs,
 		isStreamServerInSameNetwork: false,
 	});
 
@@ -278,6 +281,7 @@ export default function Home() {
 			);
 
 			if (!localThumbnailSocketRef.current) return;
+			console.log(`Socket ID => ${localThumbnailSocketRef.current.id}`);
 			localThumbnailSocketRef.current.emit('senderOffer', {
 				sdp: thumbnailSdp,
 				senderSocketID: localThumbnailSocketRef.current.id,
@@ -348,7 +352,7 @@ export default function Home() {
 
 		thumbnailSendPCRef.current = thumbnailPc;
 		dedicatedSendPCRef.current = dedicatedPc;
-	}, []);
+	}, [localThumbnailStreamRef, localDedicatedStreamRef]);
 
 	const injectLocalStream = useCallback(async () => {
 		try {
@@ -358,14 +362,14 @@ export default function Home() {
 				);
 			if (stream) {
 				const thumbnailStream = await createStreamWithConstraints(stream, {
-					width: 240,
-					height: 240,
-					frameRate: 0.5,
+					// width: 240,
+					// height: { min: 240 },
+					// frameRate: { max: 50 },
 				});
 
 				const highQualityStream = await createStreamWithConstraints(stream, {
-					width: 1000,
-					height: 1000,
+					// width: 1000,
+					// height: 1000,
 				});
 
 				localThumbnailStreamRef.current = thumbnailStream;
@@ -388,8 +392,18 @@ export default function Home() {
 		try {
 			await injectLocalStream();
 
-			if (!localThumbnailSocketRef.current) return;
-			if (!localDedicatedStreamRef.current) return;
+			if (!localThumbnailSocketRef.current || !localDedicatedSocketRef.current)
+				return;
+
+			while (
+				localThumbnailSocketRef.current.id === undefined ||
+				localDedicatedSocketRef.current.id === undefined
+			) {
+				await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
+			}
+			console.log('before create sender peer');
+			console.log(`Thumbnail Socket => ${localThumbnailSocketRef.current.id}`);
+			console.log(`Dedicated Socket => ${localDedicatedSocketRef.current.id}`);
 
 			createSenderPeerConnection();
 			await createSenderOffer();
@@ -588,10 +602,20 @@ export default function Home() {
 
 	useEffect(() => {
 		injectLocalStream();
-	}, [injectLocalStream, selectedDedicatedUser]);
+	}, [injectLocalStream, selectedDedicatedUser, isOnline, stream, trackCount]);
+
+	useEffect(() => {
+		if (!stream) return;
+
+		const updateTracks = () => setTrackCount(stream.getVideoTracks().length);
+
+		const interval = setInterval(updateTracks, 500); // Poll every 500ms
+
+		return () => clearInterval(interval);
+	}, [stream]);
 
 	return (
-		<div>
+		<div className="bg-light_grey">
 			{selectedDedicatedUser === null ? (
 				<div>
 					<ThumbnailVideoView
