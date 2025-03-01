@@ -36,8 +36,6 @@ export default function Home() {
 		[socketId: string]: RTCPeerConnection;
 	}>({});
 
-	setInterval(() => console.log(localThumbnailSocketRef.current?.id), 1000);
-
 	const dedicatedSendPCRef = useRef<RTCPeerConnection | null>(null);
 	const dedicatedReceivePCRef = useRef<RTCPeerConnection | null>(null);
 	const [thumbnailUsers, setThumbnailUsers] = useState<Array<WebRTCUser>>([]);
@@ -260,6 +258,7 @@ export default function Home() {
 	);
 
 	const createSenderOffer = useCallback(async () => {
+		console.log('Create sender offer run');
 		try {
 			if (!thumbnailSendPCRef.current || !dedicatedSendPCRef.current) return;
 			const thumbnailSdp = await thumbnailSendPCRef.current.createOffer({
@@ -355,12 +354,13 @@ export default function Home() {
 	}, [localThumbnailStreamRef, localDedicatedStreamRef]);
 
 	const injectLocalStream = useCallback(async () => {
+		console.log('injectLocalStream is called');
+
 		try {
-			if (!isOnline)
-				throw new Error(
-					"Stream server is offline, couldn't inject video stream",
-				);
-			if (stream) {
+			if (stream && isOnline) {
+				while (stream.getTracks().length == 0) {
+					await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
+				}
 				const thumbnailStream = await createStreamWithConstraints(stream, {
 					// width: 240,
 					// height: { min: 240 },
@@ -392,10 +392,9 @@ export default function Home() {
 		try {
 			await injectLocalStream();
 
-			if (!localThumbnailSocketRef.current || !localDedicatedSocketRef.current)
-				return;
-
 			while (
+				!localThumbnailSocketRef.current ||
+				!localDedicatedSocketRef.current ||
 				localThumbnailSocketRef.current.id === undefined ||
 				localDedicatedSocketRef.current.id === undefined
 			) {
@@ -418,11 +417,20 @@ export default function Home() {
 	}, [createSenderOffer, createSenderPeerConnection, injectLocalStream]);
 
 	useEffect(() => {
+		console.log('Main useEffect run');
 		localThumbnailSocketRef.current = io(SOCKET_THUMBNAIL_SERVER_URL);
 		localDedicatedSocketRef.current = io(SOCKET_DEDICATED_SERVER_URL);
 		getLocalStream();
 
+		while (
+			!localThumbnailSocketRef.current ||
+			!localDedicatedSocketRef.current
+		) {
+			console.log('Not Ready');
+		}
+
 		localThumbnailSocketRef.current.on('userEnter', (data: { id: string }) => {
+			console.log('New user entered');
 			createReceivePC(data.id);
 		});
 
@@ -591,23 +599,20 @@ export default function Home() {
 				dedicatedReceivePCRef.current.close();
 			}
 		};
-		// eslint-disable-next-line
-	}, [
-		closeReceivePC,
-		createReceivePC,
-		createSenderOffer,
-		createSenderPeerConnection,
-		getLocalStream,
-	]);
+	}, [closeReceivePC, createReceivePC, getLocalStream, thumbnailUsers]);
 
 	useEffect(() => {
+		console.log('Effect for injectLocalStream');
 		injectLocalStream();
 	}, [injectLocalStream, selectedDedicatedUser, isOnline, stream, trackCount]);
 
 	useEffect(() => {
 		if (!stream) return;
 
-		const updateTracks = () => setTrackCount(stream.getVideoTracks().length);
+		const updateTracks = () => {
+			setTrackCount(stream.getVideoTracks().length);
+			console.log('Setting new track count');
+		};
 
 		const interval = setInterval(updateTracks, 500); // Poll every 500ms
 
