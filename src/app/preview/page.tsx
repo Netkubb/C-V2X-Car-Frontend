@@ -361,26 +361,26 @@ export default function Home() {
 				while (stream.getTracks().length == 0) {
 					await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
 				}
-				const thumbnailStream = await createStreamWithConstraints(stream, {
-					// width: 240,
-					// height: { min: 240 },
-					// frameRate: { max: 50 },
-				});
+				// const thumbnailStream = await createStreamWithConstraints(stream, {
+				// width: 240,
+				// height: { min: 240 },
+				// frameRate: { max: 50 },
+				// });
 
-				const highQualityStream = await createStreamWithConstraints(stream, {
-					// width: 1000,
-					// height: 1000,
-				});
+				// const highQualityStream = await createStreamWithConstraints(stream, {
+				// width: 1000,
+				// height: 1000,
+				// });
 
-				localThumbnailStreamRef.current = thumbnailStream;
+				localThumbnailStreamRef.current = stream;
 				if (localThumbnailVideoRef.current) {
 					console.log('local thumbnail video ref found');
-					localThumbnailVideoRef.current.srcObject = thumbnailStream;
+					localThumbnailVideoRef.current.srcObject = stream;
 				}
 
-				localDedicatedStreamRef.current = highQualityStream;
+				localDedicatedStreamRef.current = stream;
 				if (localDedicatedVideoRef.current) {
-					localDedicatedVideoRef.current.srcObject = highQualityStream;
+					localDedicatedVideoRef.current.srcObject = stream;
 				}
 			}
 		} catch (e) {
@@ -417,6 +417,7 @@ export default function Home() {
 	}, [createSenderOffer, createSenderPeerConnection, injectLocalStream]);
 
 	useEffect(() => {
+		if (!stream || !isOnline) return;
 		console.log('Main useEffect run');
 		localThumbnailSocketRef.current = io(SOCKET_THUMBNAIL_SERVER_URL);
 		localDedicatedSocketRef.current = io(SOCKET_DEDICATED_SERVER_URL);
@@ -599,12 +600,21 @@ export default function Home() {
 				dedicatedReceivePCRef.current.close();
 			}
 		};
-	}, [closeReceivePC, createReceivePC, getLocalStream, thumbnailUsers]);
+		// eslint-disable-next-line
+	}, [
+		closeReceivePC,
+		createReceivePC,
+		getLocalStream,
+		createSenderOffer,
+		createSenderPeerConnection,
+		isOnline,
+		stream,
+	]);
 
 	useEffect(() => {
 		console.log('Effect for injectLocalStream');
 		injectLocalStream();
-	}, [injectLocalStream, selectedDedicatedUser, isOnline, stream, trackCount]);
+	}, [injectLocalStream, selectedDedicatedUser]);
 
 	useEffect(() => {
 		if (!stream) return;
