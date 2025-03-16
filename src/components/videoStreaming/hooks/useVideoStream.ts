@@ -71,7 +71,6 @@ const useVideoStream = ({
 						method: 'POST',
 						headers: {
 							'Content-Type': 'application/x-www-form-urlencoded',
-							charset: 'utf-8',
 						},
 						body: `suuid=${encodeURIComponent(suuid)}&data=${encodeURIComponent(
 							btoa(connection.localDescription.sdp)
