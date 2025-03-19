@@ -6,6 +6,7 @@ import useObjectDetection from './hooks/useObjectDetection';
 import useUpdateVideoAndCanvasDimensions from './hooks/useVideoAndCanvasDimensions';
 import useVideoStream from './hooks/useVideoStream';
 import useRegisterCam from './hooks/useRegisterCam';
+import useUploadToSFU from './hooks/useUploadToSFU';
 
 type StreamVideoProps = {
 	camSUUID: string;
@@ -32,9 +33,12 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 }) => {
 	const userVideo = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const socketRef = useRef<Socket | null>(null);
+	const pcRef = useRef<RTCPeerConnection | null>(null);
 
 	const controlCenterSocket = useRef<Socket>();
 
+	const sfuServerUrl = 'http://localhost:8080';
 	const streamServerUrl = 'http://localhost:8083';
 	const isStreamServerInSameNetwork = false;
 
@@ -42,6 +46,14 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 		streamServerUrl,
 		suuid: camSUUID,
 		isStreamServerInSameNetwork,
+	});
+
+	useUploadToSFU({
+		sfuServerUrl,
+		socketRef,
+		pcRef,
+		stream,
+		isOnline,
 	});
 
 	useRegisterCam({
