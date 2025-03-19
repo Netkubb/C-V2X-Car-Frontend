@@ -21,7 +21,7 @@ const Video = ({ stream, onVideoClick, userId, muted }: VideoProps) => {
 			className="rounded-lg mt-2"
 			onClick={() => onVideoClick(userId)}
 			ref={ref}
-			muted={isMuted}
+			muted
 			autoPlay
 		/>
 	);
