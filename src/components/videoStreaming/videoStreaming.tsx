@@ -7,6 +7,7 @@ import useUpdateVideoAndCanvasDimensions from './hooks/useVideoAndCanvasDimensio
 import useVideoStream from './hooks/useVideoStream';
 import useRegisterCam from './hooks/useRegisterCam';
 import useUploadToSFU from './hooks/useUploadToSFU';
+import { StreamConfig } from '@/configs/streamConfig';
 
 type StreamVideoProps = {
 	camSUUID: string;
@@ -38,8 +39,8 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 
 	const controlCenterSocket = useRef<Socket>();
 
-	const sfuServerUrl = 'http://localhost:8080';
-	const streamServerUrl = 'http://localhost:8083';
+	const sfuServerUrl = StreamConfig.sfuServerUrl;
+	const streamServerUrl = StreamConfig.converterServerUrl;
 	const isStreamServerInSameNetwork = false;
 
 	const { stream, connection, isOnline } = useVideoStream({
