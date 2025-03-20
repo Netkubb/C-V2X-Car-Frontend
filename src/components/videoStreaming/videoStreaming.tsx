@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { memo, useRef } from 'react';
 import { Socket } from 'socket.io-client';
 import { TailSpin } from 'react-loader-spinner';
 import { BlackWindow, Status, VideoContainer } from './videoStreaming.styled';
@@ -23,7 +23,7 @@ const LoadingSpinner: React.FC = () => (
 	<TailSpin color="white" height={50} width={50} />
 );
 
-const StreamVideo: React.FC<StreamVideoProps> = ({
+const StreamVideo = ({
 	camSUUID,
 	isShow,
 	carID,
@@ -31,7 +31,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 	isShowObjectDetection,
 	isStream,
 	isInitDetection,
-}) => {
+}: StreamVideoProps) => {
 	const userVideo = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const socketRef = useRef<Socket | null>(null);
@@ -106,4 +106,4 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 	);
 };
 
-export default StreamVideo;
+export default memo(StreamVideo);
