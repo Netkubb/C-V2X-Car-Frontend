@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import StreamVideo from './videoStreaming/videoStreaming';
-import { StreamConfig } from '@/configs/streamConfig';
+import { StreamConfig } from '@/configs/StreamConfig';
 
 const carID = process.env.NEXT_PUBLIC_CAR_ID?.toString() || '';
 const camIDs = [process.env.NEXT_PUBLIC_CAM_FRONT?.toString() || ''];

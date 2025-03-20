@@ -7,7 +7,7 @@ import useUpdateVideoAndCanvasDimensions from './hooks/useVideoAndCanvasDimensio
 import useVideoStream from './hooks/useVideoStream';
 import useRegisterCam from './hooks/useRegisterCam';
 import useUploadToSFU from './hooks/useUploadToSFU';
-import { StreamConfig } from '@/configs/streamConfig';
+import { StreamConfig } from '@/configs/StreamConfig';
 
 type StreamVideoProps = {
 	camSUUID: string;
@@ -83,7 +83,7 @@ const StreamVideo: React.FC<StreamVideoProps> = ({
 			<>
 				{stream ? (
 					<div className="w-full h-full flex items-center justify-center">
-						<video ref={userVideo} autoPlay muted controls />
+						<video ref={userVideo} autoPlay muted controls className="w-full" />
 						<canvas
 							id="canvas"
 							ref={canvasRef}

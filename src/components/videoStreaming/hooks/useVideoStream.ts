@@ -15,7 +15,7 @@ const useVideoStream = ({
 	// const stream = useMemo(() => new MediaStream(), []);
 	const [stream, setStream] = useState<MediaStream | undefined>(undefined);
 	const [connection, setConnection] = useState<RTCPeerConnection | undefined>(
-		undefined,
+		undefined
 	);
 	const config = isStreamServerInSameNetwork
 		? {}
@@ -25,7 +25,7 @@ const useVideoStream = ({
 						urls: ['stun:stun.l.google.com:19302'],
 					},
 				],
-			};
+		  };
 
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
@@ -57,7 +57,7 @@ const useVideoStream = ({
 			const getCodecInfo = async () => {
 				try {
 					const response = await fetch(
-						`${streamServerUrl}/stream/codec/${suuid}`,
+						`${streamServerUrl}/stream/codec/${suuid}`
 					);
 					const data = await response.json();
 					// data should be an array of codec objects
@@ -82,19 +82,20 @@ const useVideoStream = ({
 							method: 'POST',
 							headers: {
 								'Content-Type': 'application/x-www-form-urlencoded',
-								charset: 'utf-8',
 							},
-							body: `suuid=${encodeURIComponent(suuid)}&data=${encodeURIComponent(
-								btoa(connection.localDescription.sdp),
+							body: `suuid=${encodeURIComponent(
+								suuid
+							)}&data=${encodeURIComponent(
+								btoa(connection.localDescription.sdp)
 							)}`,
-						},
+						}
 					);
 					const data = await response.text();
 					connection.setRemoteDescription(
 						new RTCSessionDescription({
 							type: 'answer',
 							sdp: atob(data),
-						}),
+						})
 					);
 					setIsOnline(true);
 				} catch (error) {
