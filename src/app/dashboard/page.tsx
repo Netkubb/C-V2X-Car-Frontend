@@ -42,7 +42,7 @@ export default function Home() {
 			typeof car.longitude === 'undefined'
 		) {
 			setNotiMessage(
-				'Sent emergency failed: latitude or longitude is undefined!',
+				'Sent emergency failed: latitude or longitude is undefined!'
 			);
 		} else {
 			const socket = io(`${process.env.NEXT_PUBLIC_OBU_SOCKET_HTTP_URL}`);
@@ -154,19 +154,19 @@ export default function Home() {
 										</>
 									)}
 								</div>
-								<div className="h-full w-full flex flex-row gap-12">
+								{/* <div className="h-full w-full flex flex-row gap-12">
 									<Button
 										iconName={IconName.Preview}
 										onClick={handleOpenPreviewPage}
 									/>
-								</div>
+								</div> */}
 								<div className="h-full w-full flex flex-row gap-12">
-									<Button
+									{/* <Button
 										iconName={
 											isObjectDetectionOn ? IconName.Obj : IconName.NoObj
 										}
 										onClick={() => setIsObjectDetectionOn(!isObjectDetectionOn)}
-									/>
+									/> */}
 									<Button iconName={IconName.Logout} onClick={handleLogout} />
 								</div>
 							</div>

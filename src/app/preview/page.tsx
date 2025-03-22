@@ -25,15 +25,6 @@ const SOCKET_DEDICATED_SERVER_URL =
 const VIDEO_STREAM_SERVER_URL =
 	process.env.NEXT_PUBLIC_VIDEO_STREAM_SERVER_URL ?? 'http://localhost:8083';
 
-const createStreamWithConstraints = (
-	originalStream: MediaStream,
-	constraints: MediaTrackConstraints,
-) => {
-	const track = originalStream.getVideoTracks()[0].clone();
-	track.applyConstraints(constraints);
-	return new MediaStream([track]);
-};
-
 export default function Home() {
 	const router = useRouter();
 	const localThumbnailSocketRef = useRef<Socket | null>(null);
@@ -48,6 +39,7 @@ export default function Home() {
 	const dedicatedSendPCRef = useRef<RTCPeerConnection | null>(null);
 	const dedicatedReceivePCRef = useRef<RTCPeerConnection | null>(null);
 	const [thumbnailUsers, setThumbnailUsers] = useState<Array<WebRTCUser>>([]);
+	const [trackCount, setTrackCount] = useState<Number>(0);
 	const [selectedDedicatedUser, setSelectedDedicatedUser] =
 		useState<WebRTCUser | null>(null);
 
@@ -56,9 +48,32 @@ export default function Home() {
 
 	const { stream, connection, isOnline } = useVideoStream({
 		streamServerUrl: VIDEO_STREAM_SERVER_URL,
-		suuid: camSUUIDs[0],
+		suuid: camSUUIDs,
 		isStreamServerInSameNetwork: false,
 	});
+
+	const createStreamWithConstraints = async (
+		originalStream: MediaStream,
+		constraints: MediaTrackConstraints,
+	): Promise<MediaStream> => {
+		if (!originalStream || originalStream.getVideoTracks().length === 0) {
+			throw new Error(
+				'The provided stream is undefined, or there is no video tracks',
+			);
+		}
+
+		const videoTracks = originalStream.getVideoTracks();
+		const adjustedTrack = videoTracks[0].clone();
+
+		try {
+			await adjustedTrack.applyConstraints(constraints);
+		} catch (error) {
+			console.error('Failed to apply constraints:', error);
+			throw error;
+		}
+
+		return new MediaStream([adjustedTrack]);
+	};
 
 	const handleBackFromDedicatedView = useCallback(() => {
 		setSelectedDedicatedUser(null);
@@ -243,6 +258,7 @@ export default function Home() {
 	);
 
 	const createSenderOffer = useCallback(async () => {
+		console.log('Create sender offer run');
 		try {
 			if (!thumbnailSendPCRef.current || !dedicatedSendPCRef.current) return;
 			const thumbnailSdp = await thumbnailSendPCRef.current.createOffer({
@@ -264,6 +280,7 @@ export default function Home() {
 			);
 
 			if (!localThumbnailSocketRef.current) return;
+			console.log(`Socket ID => ${localThumbnailSocketRef.current.id}`);
 			localThumbnailSocketRef.current.emit('senderOffer', {
 				sdp: thumbnailSdp,
 				senderSocketID: localThumbnailSocketRef.current.id,
@@ -334,34 +351,37 @@ export default function Home() {
 
 		thumbnailSendPCRef.current = thumbnailPc;
 		dedicatedSendPCRef.current = dedicatedPc;
-	}, []);
+	}, [localThumbnailStreamRef, localDedicatedStreamRef]);
 
 	const injectLocalStream = useCallback(async () => {
+		console.log('injectLocalStream is called');
+
 		try {
-			if (!isOnline)
-				throw new Error(
-					"Stream server is offline, couldn't inject video stream",
-				);
-			const thumbnailStream = createStreamWithConstraints(stream, {
-				width: 240,
-				height: 240,
-				frameRate: 0.5,
-			});
+			if (stream && isOnline) {
+				while (stream.getTracks().length == 0) {
+					await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
+				}
+				// const thumbnailStream = await createStreamWithConstraints(stream, {
+				// width: 240,
+				// height: { min: 240 },
+				// frameRate: { max: 50 },
+				// });
 
-			const highQualityStream = createStreamWithConstraints(stream, {
-				width: 1000,
-				height: 1000,
-			});
+				// const highQualityStream = await createStreamWithConstraints(stream, {
+				// width: 1000,
+				// height: 1000,
+				// });
 
-			localThumbnailStreamRef.current = thumbnailStream;
-			if (localThumbnailVideoRef.current) {
-				console.log('local thumbnail video ref found');
-				localThumbnailVideoRef.current.srcObject = thumbnailStream;
-			}
+				localThumbnailStreamRef.current = stream;
+				if (localThumbnailVideoRef.current) {
+					console.log('local thumbnail video ref found');
+					localThumbnailVideoRef.current.srcObject = stream;
+				}
 
-			localDedicatedStreamRef.current = highQualityStream;
-			if (localDedicatedVideoRef.current) {
-				localDedicatedVideoRef.current.srcObject = highQualityStream;
+				localDedicatedStreamRef.current = stream;
+				if (localDedicatedVideoRef.current) {
+					localDedicatedVideoRef.current.srcObject = stream;
+				}
 			}
 		} catch (e) {
 			console.error(`injectLocalStream error: ${e}`);
@@ -372,8 +392,17 @@ export default function Home() {
 		try {
 			await injectLocalStream();
 
-			if (!localThumbnailSocketRef.current) return;
-			if (!localDedicatedStreamRef.current) return;
+			while (
+				!localThumbnailSocketRef.current ||
+				!localDedicatedSocketRef.current ||
+				localThumbnailSocketRef.current.id === undefined ||
+				localDedicatedSocketRef.current.id === undefined
+			) {
+				await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
+			}
+			console.log('before create sender peer');
+			console.log(`Thumbnail Socket => ${localThumbnailSocketRef.current.id}`);
+			console.log(`Dedicated Socket => ${localDedicatedSocketRef.current.id}`);
 
 			createSenderPeerConnection();
 			await createSenderOffer();
@@ -388,11 +417,21 @@ export default function Home() {
 	}, [createSenderOffer, createSenderPeerConnection, injectLocalStream]);
 
 	useEffect(() => {
+		if (!stream || !isOnline) return;
+		console.log('Main useEffect run');
 		localThumbnailSocketRef.current = io(SOCKET_THUMBNAIL_SERVER_URL);
 		localDedicatedSocketRef.current = io(SOCKET_DEDICATED_SERVER_URL);
 		getLocalStream();
 
+		while (
+			!localThumbnailSocketRef.current ||
+			!localDedicatedSocketRef.current
+		) {
+			console.log('Not Ready');
+		}
+
 		localThumbnailSocketRef.current.on('userEnter', (data: { id: string }) => {
+			console.log('New user entered');
 			createReceivePC(data.id);
 		});
 
@@ -565,17 +604,33 @@ export default function Home() {
 	}, [
 		closeReceivePC,
 		createReceivePC,
+		getLocalStream,
 		createSenderOffer,
 		createSenderPeerConnection,
-		getLocalStream,
+		isOnline,
+		stream,
 	]);
 
 	useEffect(() => {
+		console.log('Effect for injectLocalStream');
 		injectLocalStream();
 	}, [injectLocalStream, selectedDedicatedUser]);
 
+	useEffect(() => {
+		if (!stream) return;
+
+		const updateTracks = () => {
+			setTrackCount(stream.getVideoTracks().length);
+			console.log('Setting new track count');
+		};
+
+		const interval = setInterval(updateTracks, 500); // Poll every 500ms
+
+		return () => clearInterval(interval);
+	}, [stream]);
+
 	return (
-		<div>
+		<div className="bg-light_grey">
 			{selectedDedicatedUser === null ? (
 				<div>
 					<ThumbnailVideoView
