@@ -5,26 +5,26 @@ OS="$(uname -s)"
 
 # Function to start streaming on Windows
 start_stream_windows() {
-  echo "Starting streams on Windows..."
-  # Loop over each camera ID provided as argument
-  for cam_id in "$@"; do
-    # Start FFmpeg for each camera based on the ID passed
-    start /B ffmpeg -f dshow -i video="Integrated Webcam" -f rtsp -rtsp_transport tcp rtsp://localhost:8554/cam$cam_id
-  done
+    echo "Starting streams on Windows..."
+    # Loop over each camera ID provided as argument
+    for cam_id in "$@"; do
+        # Start FFmpeg for each camera based on the ID passed
+        start /B ffmpeg -f dshow -i video="Integrated Webcam" -f rtsp -rtsp_transport tcp rtsp://localhost:8554/cam$cam_id
+    done
 }
 
 # Function to start streaming on macOS
 start_stream_mac() {
-  echo "Starting streams on macOS..."
-  # Loop over each camera ID provided as argument
-  for cam_id in "$@"; do
-    # Start FFmpeg for each camera based on the ID passed
-    ffmpeg -f avfoundation -framerate 30 -video_size 640x480 -i "$cam_id" -f rtsp -rtsp_transport tcp rtsp://localhost:8554/cam$cam_id &
-    FFmpeg_pids[$cam_id]=$!
-  done
-
-  # Store the PIDs for later cleanup
-  echo "FFmpeg processes started with PIDs: ${FFmpeg_pids[@]}"
+    echo "Starting streams on macOS..."
+    # Loop over each camera ID provided as argument
+    for cam_id in "$@"; do
+        # Start FFmpeg for each camera based on the ID passed
+        ffmpeg -f avfoundation -framerate 30 -video_size 640x480 -i "$cam_id" -f rtsp -rtsp_transport tcp rtsp://localhost:8554/cam$cam_id &
+        FFmpeg_pids[$cam_id]=$!
+    done
+    
+    # Store the PIDs for later cleanup
+    echo "FFmpeg processes started with PIDs: ${FFmpeg_pids[@]}"
 }
 
 # Function to clean up FFmpeg processes on interruption
