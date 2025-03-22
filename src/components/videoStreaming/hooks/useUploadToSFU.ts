@@ -1,11 +1,9 @@
 import { io, Socket } from 'socket.io-client';
 import { SOCKET_EMIT_ENUM, SOCKET_ON_ENUM } from '../types/SocketEnum';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export interface UseUploadToSFUType {
 	sfuServerUrl: string;
-	socketRef: React.RefObject<Socket | null>;
-	pcRef: React.RefObject<RTCPeerConnection | null>;
 	stream: MediaStream | undefined;
 	isOnline: boolean;
 }
@@ -19,7 +17,9 @@ const PC_CONFIG = {
 };
 
 const useUploadToSFU = (props: UseUploadToSFUType) => {
-	const { sfuServerUrl, socketRef, pcRef, stream, isOnline } = props;
+	const { sfuServerUrl, stream, isOnline } = props;
+	const pcRef = useRef<RTCPeerConnection | null>(null);
+	const socketRef = useRef<Socket | null>(null);
 	const registerSFU = async () => {
 		try {
 			while (!socketRef.current || socketRef.current.id === undefined) {
@@ -115,12 +115,12 @@ const useUploadToSFU = (props: UseUploadToSFUType) => {
 					console.log('get sender answer');
 					console.log(data.sdp);
 					await pcRef.current.setRemoteDescription(
-						new RTCSessionDescription(data.sdp),
+						new RTCSessionDescription(data.sdp)
 					);
 				} catch (error) {
 					console.log(error);
 				}
-			},
+			}
 		);
 
 		socketRef.current.on(
@@ -130,13 +130,13 @@ const useUploadToSFU = (props: UseUploadToSFUType) => {
 					if (!(data.candidate && pcRef.current)) return;
 					console.log('get sender candidate');
 					await pcRef.current.addIceCandidate(
-						new RTCIceCandidate(data.candidate),
+						new RTCIceCandidate(data.candidate)
 					);
 					console.log('candidate add success');
 				} catch (error) {
 					console.log(error);
 				}
-			},
+			}
 		);
 
 		return () => {
