@@ -109,14 +109,15 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 			// console.log("incident report", messages);
 			// console.log("rsu id", rsuId);
 
-			const rawReports = (messages as ReportData[])
-				.filter((message) => message['rsu_id'] === rsuId)
+			const rawReports = (messages as Array<Array<any>>)
+				// .filter((message) => message['rsu_id'] === rsuId)
 				.map((message) => {
 					return {
-						type: message['type'],
-						rsu_id: message['rsu_id'],
-						latitude: Number(message['latitude']),
-						longitude: Number(message['longitude']),
+						// type: message['type'],
+						type: message[0] as 'ACCIDENT' | 'CLOSED ROAD' | 'CONSTRUCTION' | 'TRAFFIC CONGESTION',
+						rsu_id: '',
+						latitude: Number(message[1]),
+						longitude: Number(message[2]),
 					};
 				});
 			if (rawReports.length === 0) {

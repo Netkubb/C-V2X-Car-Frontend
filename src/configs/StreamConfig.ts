@@ -6,7 +6,7 @@ type StreamConfigType = {
 };
 
 export const StreamConfig: StreamConfigType = {
-	sfuServerUrl: 'http://localhost:8080',
+	sfuServerUrl: 'http://10.8.0.58:8080',
 	converterServerUrl: 'http://localhost:8083',
 	camSUUIDs: ['my_suuid'],
 	pcConfig: {
