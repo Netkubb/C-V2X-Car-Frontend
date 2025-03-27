@@ -80,7 +80,13 @@ const StreamVideo = ({
 			<>
 				{stream ? (
 					<div className="w-full h-full flex items-center justify-center">
-						<video ref={userVideo} autoPlay muted controls className="w-full" />
+						<video
+							ref={userVideo}
+							autoPlay
+							muted
+							controls
+							className="w-full h-full object-contain"
+						/>
 						<canvas
 							id="canvas"
 							ref={canvasRef}
