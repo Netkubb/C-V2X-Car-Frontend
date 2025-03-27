@@ -13,7 +13,7 @@ export const VideoContainer = styled.div<{
 	isshow: 'true' | 'false';
 	isinitdetection: 'true' | 'false';
 }>`
-	width: 70%;
+	width: 100%;
 	height: 100%;
 	position: relative;
 	${(props) =>
