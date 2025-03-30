@@ -7,8 +7,9 @@ import { WebRTCUser } from '../../utils/webRTCUser';
 import Button from '@/components/Button';
 import { IconName } from '@/const/IconName';
 import useVideoStream from '@/components/videoStreaming/hooks/useVideoStream';
+import { SOCKET_EMIT_ENUM, SOCKET_ON_ENUM } from '@/utils/socketEnum';
 
-const pc_config = {
+const PC_CONFIG = {
 	iceServers: [
 		{
 			urls: 'stun:stun.l.google.com:19302',
@@ -52,28 +53,28 @@ export default function Home() {
 		isStreamServerInSameNetwork: false,
 	});
 
-	const createStreamWithConstraints = async (
-		originalStream: MediaStream,
-		constraints: MediaTrackConstraints,
-	): Promise<MediaStream> => {
-		if (!originalStream || originalStream.getVideoTracks().length === 0) {
-			throw new Error(
-				'The provided stream is undefined, or there is no video tracks',
-			);
-		}
-
-		const videoTracks = originalStream.getVideoTracks();
-		const adjustedTrack = videoTracks[0].clone();
-
-		try {
-			await adjustedTrack.applyConstraints(constraints);
-		} catch (error) {
-			console.error('Failed to apply constraints:', error);
-			throw error;
-		}
-
-		return new MediaStream([adjustedTrack]);
-	};
+	// const createStreamWithConstraints = async (
+	// 	originalStream: MediaStream,
+	// 	constraints: MediaTrackConstraints,
+	// ): Promise<MediaStream> => {
+	// 	if (!originalStream || originalStream.getVideoTracks().length === 0) {
+	// 		throw new Error(
+	// 			'The provided stream is undefined, or there is no video tracks',
+	// 		);
+	// 	}
+	//
+	// 	const videoTracks = originalStream.getVideoTracks();
+	// 	const adjustedTrack = videoTracks[0].clone();
+	//
+	// 	try {
+	// 		await adjustedTrack.applyConstraints(constraints);
+	// 	} catch (error) {
+	// 		console.error('Failed to apply constraints:', error);
+	// 		throw error;
+	// 	}
+	//
+	// 	return new MediaStream([adjustedTrack]);
+	// };
 
 	const handleBackFromDedicatedView = useCallback(() => {
 		setSelectedDedicatedUser(null);
@@ -81,9 +82,9 @@ export default function Home() {
 	}, []);
 
 	const createDedicatedReceiverPeerConnection = useCallback(
-		(socketID: string) => {
+		(socketId: string) => {
 			try {
-				const pc = new RTCPeerConnection(pc_config);
+				const pc = new RTCPeerConnection(PC_CONFIG);
 
 				// add pc to peerConnections object
 				dedicatedReceivePCRef.current = pc;
@@ -93,8 +94,8 @@ export default function Home() {
 					console.log('dedicated receiver PC onicecandidate');
 					localDedicatedSocketRef.current.emit('receiverCandidate', {
 						candidate: e.candidate,
-						receiverSocketID: localDedicatedSocketRef.current.id,
-						senderSocketID: socketID,
+						receiverSocketId: localDedicatedSocketRef.current.id,
+						senderSocketId: socketId,
 					});
 				};
 
@@ -117,7 +118,7 @@ export default function Home() {
 
 				pc.ontrack = (e) => {
 					console.log('dedicated ontrack success');
-					setSelectedDedicatedUser({ id: socketID, stream: e.streams[0] });
+					setSelectedDedicatedUser({ id: socketId, stream: e.streams[0] });
 				};
 				const testDC = pc.createDataChannel('testChannel');
 				console.log('created dc');
@@ -133,7 +134,7 @@ export default function Home() {
 	);
 
 	const createDedicatedReceiverOffer = useCallback(
-		async (pc: RTCPeerConnection, senderSocketID: string) => {
+		async (pc: RTCPeerConnection, senderSocketId: string) => {
 			try {
 				const sdp = await pc.createOffer({
 					offerToReceiveAudio: true,
@@ -143,11 +144,11 @@ export default function Home() {
 				await pc.setLocalDescription(new RTCSessionDescription(sdp));
 
 				if (!localDedicatedSocketRef.current) return;
-				localDedicatedSocketRef.current.emit('receiverOffer', {
+				localDedicatedSocketRef.current.emit(SOCKET_EMIT_ENUM.RECEIVER_OFFER, {
 					sdp,
-					receiverSocketID: localDedicatedSocketRef.current.id,
-					senderSocketID,
-					roomID: '1234',
+					receiverSocketId: localDedicatedSocketRef.current.id,
+					senderSocketId,
+					roomId: '1234',
 				});
 			} catch (error) {
 				console.log(error);
@@ -159,7 +160,7 @@ export default function Home() {
 	const createDedicatedReceivePC = useCallback(
 		(id: string) => {
 			try {
-				console.log(`socketID(${id}) is selected`);
+				console.log(`socketId(${id}) is selected`);
 				const pc = createDedicatedReceiverPeerConnection(id);
 				if (!(localDedicatedSocketRef.current && pc)) return;
 				createDedicatedReceiverOffer(pc, id);
@@ -177,7 +178,7 @@ export default function Home() {
 	}, []);
 
 	const createReceiverOffer = useCallback(
-		async (pc: RTCPeerConnection, senderSocketID: string) => {
+		async (pc: RTCPeerConnection, senderSocketId: string) => {
 			try {
 				const sdp = await pc.createOffer({
 					offerToReceiveAudio: true,
@@ -187,11 +188,11 @@ export default function Home() {
 				await pc.setLocalDescription(new RTCSessionDescription(sdp));
 
 				if (!localThumbnailSocketRef.current) return;
-				localThumbnailSocketRef.current.emit('receiverOffer', {
+				localThumbnailSocketRef.current.emit(SOCKET_EMIT_ENUM.RECEIVER_OFFER, {
 					sdp,
-					receiverSocketID: localThumbnailSocketRef.current.id,
-					senderSocketID,
-					roomID: '1234',
+					receiverSocketId: localThumbnailSocketRef.current.id,
+					senderSocketId,
+					roomId: '1234',
 				});
 			} catch (error) {
 				console.log(error);
@@ -200,24 +201,27 @@ export default function Home() {
 		[],
 	);
 
-	const createReceiverPeerConnection = useCallback((socketID: string) => {
+	const createReceiverPeerConnection = useCallback((socketId: string) => {
 		try {
-			const pc = new RTCPeerConnection(pc_config);
+			const pc = new RTCPeerConnection(PC_CONFIG);
 
 			// add pc to peerConnections object
 			thumbnailReceivePCsRef.current = {
 				...thumbnailReceivePCsRef.current,
-				[socketID]: pc,
+				[socketId]: pc,
 			};
 
 			pc.onicecandidate = (e) => {
 				if (!(e.candidate && localThumbnailSocketRef.current)) return;
 				console.log('receiver PC onicecandidate');
-				localThumbnailSocketRef.current.emit('receiverCandidate', {
-					candidate: e.candidate,
-					receiverSocketID: localThumbnailSocketRef.current.id,
-					senderSocketID: socketID,
-				});
+				localThumbnailSocketRef.current.emit(
+					SOCKET_EMIT_ENUM.RECEIVER_CANDIDATE,
+					{
+						candidate: e.candidate,
+						receiverSocketId: localThumbnailSocketRef.current.id,
+						senderSocketId: socketId,
+					},
+				);
 			};
 
 			pc.oniceconnectionstatechange = (e) => {
@@ -228,9 +232,9 @@ export default function Home() {
 				console.log('ontrack success');
 				setThumbnailUsers((oldUsers) =>
 					oldUsers
-						.filter((user) => user.id !== socketID)
+						.filter((user) => user.id !== socketId)
 						.concat({
-							id: socketID,
+							id: socketId,
 							stream: e.streams[0],
 						}),
 				);
@@ -246,7 +250,7 @@ export default function Home() {
 	const createReceivePC = useCallback(
 		(id: string) => {
 			try {
-				console.log(`socketID(${id}) user entered`);
+				console.log(`socketId(${id}) user entered`);
 				const pc = createReceiverPeerConnection(id);
 				if (!(localThumbnailSocketRef.current && pc)) return;
 				createReceiverOffer(pc, id);
@@ -280,19 +284,19 @@ export default function Home() {
 			);
 
 			if (!localThumbnailSocketRef.current) return;
-			console.log(`Socket ID => ${localThumbnailSocketRef.current.id}`);
-			localThumbnailSocketRef.current.emit('senderOffer', {
+			console.log(`Socket Id => ${localThumbnailSocketRef.current.id}`);
+			localThumbnailSocketRef.current.emit(SOCKET_EMIT_ENUM.SENDER_OFFER, {
 				sdp: thumbnailSdp,
-				senderSocketID: localThumbnailSocketRef.current.id,
-				roomID: '1234',
+				senderSocketId: localThumbnailSocketRef.current.id,
+				roomId: '1234',
 			});
 
 			if (!localDedicatedSocketRef.current) return;
-			localDedicatedSocketRef.current.emit('senderOffer', {
+			localDedicatedSocketRef.current.emit(SOCKET_EMIT_ENUM.SENDER_OFFER, {
 				sdp: dedicatedSdp,
-				senderSocketID: localDedicatedSocketRef.current.id,
-				thumbnailSocketID: localThumbnailSocketRef.current.id,
-				roomID: '1234',
+				senderSocketId: localDedicatedSocketRef.current.id,
+				thumbnailSocketId: localThumbnailSocketRef.current.id,
+				roomId: '1234',
 			});
 		} catch (error) {
 			console.log(error);
@@ -300,23 +304,23 @@ export default function Home() {
 	}, []);
 
 	const createSenderPeerConnection = useCallback(() => {
-		const thumbnailPc = new RTCPeerConnection(pc_config);
-		const dedicatedPc = new RTCPeerConnection(pc_config);
+		const thumbnailPc = new RTCPeerConnection(PC_CONFIG);
+		const dedicatedPc = new RTCPeerConnection(PC_CONFIG);
 
 		thumbnailPc.onicecandidate = (e) => {
 			if (!(e.candidate && localThumbnailSocketRef.current)) return;
 			console.log('sender thumbnail PC onicecandidate');
-			localThumbnailSocketRef.current.emit('senderCandidate', {
+			localThumbnailSocketRef.current.emit(SOCKET_EMIT_ENUM.SENDER_CANDIDATE, {
 				candidate: e.candidate,
-				senderSocketID: localThumbnailSocketRef.current.id,
+				senderSocketId: localThumbnailSocketRef.current.id,
 			});
 		};
 		dedicatedPc.onicecandidate = (e) => {
 			if (!(e.candidate && localDedicatedSocketRef.current)) return;
 			console.log('sender dedicated PC onicecandidate');
-			localDedicatedSocketRef.current.emit('senderCandidate', {
+			localDedicatedSocketRef.current.emit(SOCKET_EMIT_ENUM.SENDER_CANDIDATE, {
 				candidate: e.candidate,
-				senderSocketID: localDedicatedSocketRef.current.id,
+				senderSocketId: localDedicatedSocketRef.current.id,
 			});
 		};
 
@@ -407,9 +411,9 @@ export default function Home() {
 			createSenderPeerConnection();
 			await createSenderOffer();
 
-			localThumbnailSocketRef.current.emit('joinRoom', {
+			localThumbnailSocketRef.current.emit(SOCKET_EMIT_ENUM.JOIN_ROOM, {
 				id: localThumbnailSocketRef.current.id,
-				roomID: '1234',
+				roomId: '1234',
 			});
 		} catch (e) {
 			console.log(`getLocalStream error: ${e}`);
@@ -430,25 +434,33 @@ export default function Home() {
 			console.log('Not Ready');
 		}
 
-		localThumbnailSocketRef.current.on('userEnter', (data: { id: string }) => {
-			console.log('New user entered');
-			createReceivePC(data.id);
-		});
+		localThumbnailSocketRef.current.on(
+			SOCKET_ON_ENUM.USER_ENTER,
+			(data: { id: string }) => {
+				console.log('New user entered');
+				createReceivePC(data.id);
+			},
+		);
 
 		localThumbnailSocketRef.current.on(
-			'allUsers',
+			SOCKET_ON_ENUM.ALL_USERS,
 			(data: { users: Array<{ id: string }> }) => {
 				data.users.forEach((user) => createReceivePC(user.id));
 			},
 		);
 
-		localThumbnailSocketRef.current.on('userExit', (data: { id: string }) => {
-			closeReceivePC(data.id);
-			setThumbnailUsers((users) => users.filter((user) => user.id !== data.id));
-		});
+		localThumbnailSocketRef.current.on(
+			SOCKET_ON_ENUM.USER_EXIT,
+			(data: { id: string }) => {
+				closeReceivePC(data.id);
+				setThumbnailUsers((users) =>
+					users.filter((user) => user.id !== data.id),
+				);
+			},
+		);
 
 		localThumbnailSocketRef.current.on(
-			'getSenderAnswer',
+			SOCKET_ON_ENUM.GET_SENDER_ANSWER,
 			async (data: { sdp: RTCSessionDescription }) => {
 				try {
 					if (!thumbnailSendPCRef.current) return;
@@ -464,7 +476,7 @@ export default function Home() {
 		);
 
 		localDedicatedSocketRef.current.on(
-			'getSenderAnswer',
+			SOCKET_ON_ENUM.GET_SENDER_ANSWER,
 			async (data: { sdp: RTCSessionDescription }) => {
 				try {
 					if (!dedicatedSendPCRef.current) return;
@@ -480,7 +492,7 @@ export default function Home() {
 		);
 
 		localThumbnailSocketRef.current.on(
-			'getSenderCandidate',
+			SOCKET_ON_ENUM.GET_SENDER_CANDIDATE,
 			async (data: { candidate: RTCIceCandidateInit }) => {
 				try {
 					if (!(data.candidate && thumbnailSendPCRef.current)) return;
@@ -496,7 +508,7 @@ export default function Home() {
 		);
 
 		localDedicatedSocketRef.current.on(
-			'getSenderCandidate',
+			SOCKET_ON_ENUM.GET_SENDER_CANDIDATE,
 			async (data: { candidate: RTCIceCandidateInit }) => {
 				try {
 					console.log(`Sender candidate data: ${data}`);
@@ -513,14 +525,14 @@ export default function Home() {
 		);
 
 		localThumbnailSocketRef.current.on(
-			'getReceiverAnswer',
+			SOCKET_ON_ENUM.GET_RECEIVER_ANSWER,
 			async (data: { id: string; sdp: RTCSessionDescription }) => {
 				try {
-					console.log(`get socketID(${data.id})'s answer`);
+					console.log(`get socketId(${data.id})'s answer`);
 					const pc: RTCPeerConnection = thumbnailReceivePCsRef.current[data.id];
 					if (!pc) return;
 					await pc.setRemoteDescription(data.sdp);
-					console.log(`socketID(${data.id})'s set remote sdp success`);
+					console.log(`socketId(${data.id})'s set remote sdp success`);
 				} catch (error) {
 					console.log(error);
 				}
@@ -528,15 +540,15 @@ export default function Home() {
 		);
 
 		localDedicatedSocketRef.current.on(
-			'getReceiverAnswer',
+			SOCKET_ON_ENUM.GET_RECEIVER_ANSWER,
 			async (data: { id: string; sdp: RTCSessionDescription }) => {
 				try {
-					console.log(`get dedicated socketID(${data.id})'s answer`);
+					console.log(`get dedicated socketId(${data.id})'s answer`);
 					const pc = dedicatedReceivePCRef.current;
 					if (!pc) return;
 					await pc.setRemoteDescription(data.sdp);
 					console.log(
-						`dedicated socketID(${data.id})'s set remote sdp success`,
+						`dedicated socketId(${data.id})'s set remote sdp success`,
 					);
 				} catch (error) {
 					console.log(error);
@@ -545,15 +557,15 @@ export default function Home() {
 		);
 
 		localThumbnailSocketRef.current.on(
-			'getReceiverCandidate',
+			SOCKET_ON_ENUM.GET_RECEIVER_CANDIDATE,
 			async (data: { id: string; candidate: RTCIceCandidateInit }) => {
 				try {
 					console.log(data);
-					console.log(`get socketID(${data.id})'s candidate`);
+					console.log(`get socketId(${data.id})'s candidate`);
 					const pc: RTCPeerConnection = thumbnailReceivePCsRef.current[data.id];
 					if (!(pc && data.candidate)) return;
 					await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-					console.log(`socketID(${data.id})'s candidate add success`);
+					console.log(`socketId(${data.id})'s candidate add success`);
 				} catch (error) {
 					console.log(error);
 				}
@@ -561,18 +573,18 @@ export default function Home() {
 		);
 
 		localDedicatedSocketRef.current.on(
-			'getReceiverCandidate',
+			SOCKET_ON_ENUM.GET_RECEIVER_CANDIDATE,
 			async (data: { id: string; candidate: RTCIceCandidateInit }) => {
 				try {
 					console.log(data);
-					console.log(`get dedicated socketID(${data.id})'s candidate`);
+					console.log(`get dedicated socketId(${data.id})'s candidate`);
 					const pc = dedicatedReceivePCRef.current;
 					if (!pc) console.log('here');
 					if (!(pc && data.candidate)) {
 						return;
 					}
 					await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
-					console.log(`socketID(${data.id})'s candidate add success`);
+					console.log(`socketId(${data.id})'s candidate add success`);
 				} catch (error) {
 					console.log(error);
 				}
