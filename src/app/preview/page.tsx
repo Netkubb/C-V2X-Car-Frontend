@@ -92,11 +92,14 @@ export default function Home() {
 				pc.onicecandidate = (e) => {
 					if (!(e.candidate && localDedicatedSocketRef.current)) return;
 					console.log('dedicated receiver PC onicecandidate');
-					localDedicatedSocketRef.current.emit('receiverCandidate', {
-						candidate: e.candidate,
-						receiverSocketId: localDedicatedSocketRef.current.id,
-						senderSocketId: socketId,
-					});
+					localDedicatedSocketRef.current.emit(
+						SOCKET_EMIT_ENUM.RECEIVER_CANDIDATE,
+						{
+							candidate: e.candidate,
+							receiverSocketId: localDedicatedSocketRef.current.id,
+							senderSocketId: socketId,
+						},
+					);
 				};
 
 				pc.oniceconnectionstatechange = (e) => {
