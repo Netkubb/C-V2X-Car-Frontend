@@ -40,7 +40,6 @@ export default function Home() {
 	const dedicatedSendPCRef = useRef<RTCPeerConnection | null>(null);
 	const dedicatedReceivePCRef = useRef<RTCPeerConnection | null>(null);
 	const [thumbnailUsers, setThumbnailUsers] = useState<Array<WebRTCUser>>([]);
-	const [trackCount, setTrackCount] = useState<Number>(0);
 	const [selectedDedicatedUser, setSelectedDedicatedUser] =
 		useState<WebRTCUser | null>(null);
 
@@ -353,7 +352,9 @@ export default function Home() {
 			const timestamp = Date.now();
 			console.log(`Timestamp: ${timestamp}`);
 			console.log(`State: ${latencyDataChannel.readyState}`);
-			latencyDataChannel.send(timestamp.toString());
+			if (latencyDataChannel.readyState == 'open') {
+				latencyDataChannel.send(timestamp.toString());
+			}
 		}, 1000);
 
 		thumbnailSendPCRef.current = thumbnailPc;
@@ -379,13 +380,13 @@ export default function Home() {
 				// height: 1000,
 				// });
 
-				localThumbnailStreamRef.current = stream;
+				localThumbnailStreamRef.current = stream.clone();
 				if (localThumbnailVideoRef.current) {
 					console.log('local thumbnail video ref found');
 					localThumbnailVideoRef.current.srcObject = stream;
 				}
 
-				localDedicatedStreamRef.current = stream;
+				localDedicatedStreamRef.current = stream.clone();
 				if (localDedicatedVideoRef.current) {
 					localDedicatedVideoRef.current.srcObject = stream;
 				}
@@ -631,18 +632,18 @@ export default function Home() {
 		injectLocalStream();
 	}, [injectLocalStream, selectedDedicatedUser]);
 
-	useEffect(() => {
-		if (!stream) return;
-
-		const updateTracks = () => {
-			setTrackCount(stream.getVideoTracks().length);
-			console.log('Setting new track count');
-		};
-
-		const interval = setInterval(updateTracks, 500); // Poll every 500ms
-
-		return () => clearInterval(interval);
-	}, [stream]);
+	// useEffect(() => {
+	// 	if (!stream) return;
+	//
+	// 	const updateTracks = () => {
+	// 		setTrackCount(stream.getVideoTracks().length);
+	// 		console.log('Setting new track count');
+	// 	};
+	//
+	// 	const interval = setInterval(updateTracks, 500); // Poll every 500ms
+	//
+	// 	return () => clearInterval(interval);
+	// }, [stream]);
 
 	return (
 		<div className="bg-light_grey">
