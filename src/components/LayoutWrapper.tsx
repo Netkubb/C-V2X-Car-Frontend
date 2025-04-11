@@ -90,7 +90,7 @@ export default function LayoutWrapper(props: { children: React.ReactNode }) {
 			}
 		});
 		socket.on('rsu info', (message) => {
-			console.log('rsu info', message);
+			// console.log('rsu info', message);
 			if (message['rsu_id']) {
 				// console.log("Resetting the RSUID", message['rsu_id'])
 				setRsuId(message['rsu_id']);
