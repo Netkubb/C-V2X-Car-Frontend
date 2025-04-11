@@ -19,6 +19,7 @@ export const ThumbnailVideoView: React.FC<ThumbnailViewProps> = ({
 	onVideoClick,
 }) => {
 	const videoCount = thumbnailUsers.length;
+	console.log(videoCount);
 	return (
 		<div className="w-full flex flex-col items-center">
 			<p className="mt-32 font-istok text-black text-h2 border-b-2 border-gray-400 pb-2">
@@ -40,10 +41,13 @@ export const ThumbnailVideoView: React.FC<ThumbnailViewProps> = ({
 			)}
 			{videoCount != 0 && (
 				<div
-					className={`grid grid-cols-${Math.min(
-						videoCount,
-						3
-					)} gap-6 mt-2 mb-32 w-[80%]`}
+					className={`grid gap-6 mt-2 mb-32 w-[80%] grid-cols-2`}
+					style={{
+						gridTemplateColumns: `repeat(${Math.min(
+							videoCount,
+							3
+						)}, minmax(0, 1fr))`,
+					}}
 				>
 					{thumbnailUsers.map((user) => (
 						<Video
