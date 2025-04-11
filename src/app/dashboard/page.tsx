@@ -154,12 +154,12 @@ export default function Home() {
 										</>
 									)}
 								</div>
-								{/* <div className="h-full w-full flex flex-row gap-12">
+								<div className="h-full w-full flex flex-row gap-12">
 									<Button
 										iconName={IconName.Preview}
 										onClick={handleOpenPreviewPage}
 									/>
-								</div> */}
+								</div>
 								<div className="h-full w-full flex flex-row gap-12">
 									{/* <Button
 										iconName={

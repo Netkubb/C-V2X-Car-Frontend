@@ -18,7 +18,7 @@ const Video = ({ stream, onVideoClick, userId, muted }: VideoProps) => {
 
 	return (
 		<video
-			className="rounded-lg mt-2"
+			className="mt-2 w-full object-contain rounded-lg"
 			onClick={() => onVideoClick(userId)}
 			ref={ref}
 			muted

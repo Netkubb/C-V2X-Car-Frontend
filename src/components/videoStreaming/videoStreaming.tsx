@@ -34,7 +34,6 @@ const StreamVideo = ({
 }: StreamVideoProps) => {
 	const userVideo = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const pcRef = useRef<RTCPeerConnection | null>(null);
 
 	const controlCenterSocket = useRef<Socket>();
 
@@ -103,4 +102,4 @@ const StreamVideo = ({
 	);
 };
 
-export default memo(StreamVideo);
+export default StreamVideo;

@@ -17,46 +17,62 @@ export const ThumbnailVideoView: React.FC<ThumbnailViewProps> = ({
 	thumbnailUsers,
 	localThumbnailVideoRef,
 	onVideoClick,
-}) => (
-	<div>
-		<p className="font-istok text-black text-h2 border-b-2 border-gray-400 pb-2">
-			Video Thumbnail View
-		</p>
-		<p className="font-istok text-black text-p1 border border-gray-300 rounded-md px-2 py-1 inline-block">
-			Local Video
-		</p>
-		<video
-			className="rounded-lg mt-2"
-			muted
-			ref={localThumbnailVideoRef}
-			autoPlay
-		/>
-		<p className="font-istok text-black text-p1 border border-gray-300 rounded-md px-2 py-1 inline-block mt-4">
-			Other Cars Video
-		</p>
-		<div className="flex flex-wrap gap-4 mt-2">
-			{thumbnailUsers.map((user) => (
-				<Video
-					key={user.id}
-					stream={user.stream}
-					onVideoClick={onVideoClick}
-					userId={user.id}
-				/>
-			))}
+}) => {
+	const videoCount = thumbnailUsers.length;
+	return (
+		<div className="w-full flex flex-col items-center">
+			<p className="mt-32 font-istok text-black text-h2 border-b-2 border-gray-400 pb-2">
+				Video Thumbnail View
+			</p>
+			<p className="font-istok text-black text-p1 rounded-md px-2 py-1 mt-12 inline-block">
+				Local Video
+			</p>
+			<video
+				className="mt-2 mb-16 w-[80%] object-contain rounded-lg"
+				muted
+				ref={localThumbnailVideoRef}
+				autoPlay
+			/>
+			{videoCount != 0 && (
+				<p className="font-istok text-black text-p1 rounded-md px-2 py-1 inline-block mt-4">
+					Other Cars Video
+				</p>
+			)}
+			{videoCount != 0 && (
+				<div
+					className={`grid grid-cols-${Math.min(
+						videoCount,
+						3
+					)} gap-6 mt-2 mb-32 w-[80%]`}
+				>
+					{thumbnailUsers.map((user) => (
+						<Video
+							key={user.id}
+							stream={user.stream}
+							onVideoClick={onVideoClick}
+							userId={user.id}
+						/>
+					))}
+				</div>
+			)}
 		</div>
-	</div>
-);
+	);
+};
 
 export const DedicatedVideoView: React.FC<DedicatedViewProps> = ({
 	selectedUser,
 	onBack,
 }) => (
-	<div>
-		<p className="font-istok text-white text-h2">Dedicated View</p>
-		<Video
-			stream={selectedUser.stream}
-			onVideoClick={onBack}
-			userId={selectedUser.id}
-		/>
+	<div className="w-full flex flex-col items-center">
+		<p className="mt-32 font-istok text-black text-h2 border-b-2 border-gray-400 pb-2">
+			Dedicated View
+		</p>
+		<div className="w-[80%] mb-32">
+			<Video
+				stream={selectedUser.stream}
+				onVideoClick={onBack}
+				userId={selectedUser.id}
+			/>
+		</div>
 	</div>
 );
