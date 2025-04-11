@@ -46,16 +46,6 @@ export default function Home() {
 	const localThumbnailVideoRef = useRef<HTMLVideoElement>(null);
 	const localDedicatedVideoRef = useRef<HTMLVideoElement>(null);
 
-	const {
-		stream: stream2,
-		connection: connection2,
-		isOnline: isOnline2,
-	} = useVideoStream({
-		streamServerUrl: VIDEO_STREAM_SERVER_URL,
-		suuid: camSUUIDs,
-		isStreamServerInSameNetwork: false,
-	});
-
 	const { stream, connection, isOnline } = useVideoStream({
 		streamServerUrl: VIDEO_STREAM_SERVER_URL,
 		suuid: camSUUIDs,
@@ -372,7 +362,7 @@ export default function Home() {
 		console.log('injectLocalStream is called');
 
 		try {
-			if (stream && isOnline && stream2 && isOnline2) {
+			if (stream && isOnline) {
 				while (stream.getTracks().length == 0) {
 					await new Promise((resolve) => setTimeout(resolve, 100)); // 100ms delay
 				}
@@ -391,13 +381,13 @@ export default function Home() {
 				localThumbnailStreamRef.current = thumbnailStream;
 				if (localThumbnailVideoRef.current) {
 					console.log('local thumbnail video ref found');
-					localThumbnailVideoRef.current.srcObject = stream2;
+					localThumbnailVideoRef.current.srcObject = thumbnailStream;
 				}
 
 				const dedicatedStream = cloneStream(stream);
 				localDedicatedStreamRef.current = dedicatedStream;
 				if (localDedicatedVideoRef.current) {
-					localDedicatedVideoRef.current.srcObject = stream2;
+					localDedicatedVideoRef.current.srcObject = dedicatedStream;
 				}
 			}
 		} catch (e) {
